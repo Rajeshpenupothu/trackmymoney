@@ -9,8 +9,8 @@ COPY src ./src
 COPY .mvn ./.mvn
 COPY mvnw .
 
-# Build the application
-RUN ./mvnw clean package -DskipTests
+# Make mvnw executable and build the application
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
 # Stage 2: Runtime with JRE only (smaller image)
 FROM eclipse-temurin:17-jre-alpine
