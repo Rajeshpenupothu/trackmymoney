@@ -14,9 +14,9 @@ services:
     startCommand: ""
     envVars:
       - key: SPRING_DATASOURCE_URL
-        sync: false
+        value: jdbc:postgresql://ep-restless-snow-a16c6aoh-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require&channel_binding=require
       - key: SPRING_DATASOURCE_USERNAME
-        sync: false
+        value: neondb_owner
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
 
