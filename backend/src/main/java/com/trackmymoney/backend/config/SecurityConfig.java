@@ -39,12 +39,12 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/",
-                    "/api/auth/**",
-                    "/error"
+                .requestMatchers(                    \"/\",                    "/api/auth/**",
+                    "/api/health",
+                    "/health"
                 ).permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().denyAll()
             )
             .addFilterBefore(
                 jwtAuthenticationFilter,

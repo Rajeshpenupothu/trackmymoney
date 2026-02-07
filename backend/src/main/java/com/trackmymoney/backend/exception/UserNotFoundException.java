@@ -1,3 +1,4 @@
+
 package com.trackmymoney.backend.exception;
 
 public class UserNotFoundException extends RuntimeException {
