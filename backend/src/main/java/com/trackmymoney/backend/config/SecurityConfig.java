@@ -39,12 +39,12 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(                    \"/\",                    "/api/auth/**",
-                    "/api/health",
-                    "/health"
+                .requestMatchers(
+                    "/",
+                    "/api/auth/**",
+                    "/error"
                 ).permitAll()
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().denyAll()
+                .anyRequest().authenticated()
             )
             .addFilterBefore(
                 jwtAuthenticationFilter,
@@ -58,10 +58,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Parse FRONTEND_ORIGINS env var (comma-separated)
         List<String> origins = Arrays.asList(frontendOrigins.split(","));
         origins = origins.stream().map(String::trim).toList();
-        
+
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
