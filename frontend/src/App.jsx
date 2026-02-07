@@ -14,10 +14,8 @@ import Profile from "./pages/Profile";
 import api from "./api/api";
 
 function App() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [activePage, setActivePage] = useState("Home");
-
-  /* ✅ GLOBAL DARK MODE STATE */
   const [dark, setDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -126,6 +124,17 @@ function App() {
 
     loadData();
   }, [user]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-zinc-100 dark:bg-slate-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-zinc-900 dark:text-zinc-100">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) return <Login />;
 
