@@ -40,7 +40,6 @@ public class LendingController {
         lendingService.delete(id);
     }
 
-    // ✅ ADD THIS — SETTLE (NO DELETE)
     @PutMapping("/{id}/settle")
     public void settle(@PathVariable Long id) {
         lendingService.settle(id);

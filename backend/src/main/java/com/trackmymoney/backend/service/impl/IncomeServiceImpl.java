@@ -29,7 +29,6 @@ public class IncomeServiceImpl implements IncomeService {
         this.userRepository = userRepository;
     }
 
-    // 🔐 Resolve logged-in user
     private User getLoggedInUser() {
         String email = SecurityUtils.getCurrentUserEmail();
         return userRepository.findByEmail(email)
@@ -38,7 +37,6 @@ public class IncomeServiceImpl implements IncomeService {
                 );
     }
 
-    // ✅ ADD income (existing – unchanged)
     @Override
     public IncomeResponse addIncome(CreateIncomeRequest request) {
 
@@ -54,7 +52,6 @@ public class IncomeServiceImpl implements IncomeService {
         return mapToResponse(incomeRepository.save(income));
     }
 
-    // ✏️ UPDATE income (NEW)
     @Override
     public IncomeResponse updateIncome(Long id, CreateIncomeRequest request) {
 
@@ -74,7 +71,7 @@ public class IncomeServiceImpl implements IncomeService {
         return mapToResponse(incomeRepository.save(income));
     }
 
-    // 🗑 DELETE income (NEW)
+
     @Override
     public void deleteIncome(Long id) {
 
@@ -89,7 +86,6 @@ public class IncomeServiceImpl implements IncomeService {
         incomeRepository.delete(income);
     }
 
-    // 📄 GET all incomes (existing – unchanged)
     @Override
     public List<IncomeResponse> getIncomesForCurrentUser() {
 

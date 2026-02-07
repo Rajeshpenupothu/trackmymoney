@@ -29,7 +29,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         this.userRepository = userRepository;
     }
 
-    // ✅ ADD expense
     @Override
     public ExpenseResponse addExpense(CreateExpenseRequest request) {
 
@@ -45,7 +44,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         return mapToResponse(expenseRepository.save(expense));
     }
 
-    // 🔵 UPDATE expense (NEW)
     @Override
     public ExpenseResponse updateExpense(Long id, CreateExpenseRequest request) {
 
@@ -65,7 +63,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         return mapToResponse(expenseRepository.save(expense));
     }
 
-    // 🔴 DELETE expense (NEW)
     @Override
     public void deleteExpense(Long id) {
 
@@ -80,7 +77,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.delete(expense);
     }
 
-    // ✅ Get expenses
     @Override
     public List<ExpenseResponse> getExpensesForCurrentUser() {
 
@@ -92,7 +88,6 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Get expenses by month
     @Override
     public List<ExpenseResponse> getExpensesForCurrentUserByMonth(
             int year,
@@ -111,7 +106,6 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .collect(Collectors.toList());
     }
 
-    // 🔒 Resolve logged-in user
     private User getLoggedInUser() {
 
         String email = SecurityUtils.getCurrentUserEmail();
@@ -122,7 +116,6 @@ public class ExpenseServiceImpl implements ExpenseService {
                 );
     }
 
-    // 🔁 DTO mapper
     private ExpenseResponse mapToResponse(Expense expense) {
         return new ExpenseResponse(
                 expense.getId(),

@@ -26,7 +26,6 @@ public class JwtUtil {
     private static final long EXPIRATION_TIME =
             1000 * 60 * 60 * 24; // 24 hours
 
-    // 🔐 Generate token
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -38,26 +37,22 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ VALIDATE token properly
     public boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
         return email.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
     }
 
-    // 📧 Extract email
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // ⏰ Check expiry
     private boolean isTokenExpired(String token) {
         return extractAllClaims(token)
                 .getExpiration()
                 .before(new Date());
     }
 
-    // 🔎 Parse claims
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getKey())

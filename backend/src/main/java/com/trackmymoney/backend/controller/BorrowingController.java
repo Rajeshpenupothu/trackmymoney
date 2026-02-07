@@ -17,7 +17,6 @@ public class BorrowingController {
         this.borrowingService = borrowingService;
     }
 
-    // ✅ FIXED: create → add
     @PostMapping
     public BorrowingResponse create(@RequestBody BorrowingRequest request) {
         return borrowingService.add(request);
@@ -36,13 +35,11 @@ public class BorrowingController {
         return borrowingService.update(id, request);
     }
 
-    // ❌ KEEP DELETE (optional, not used in UI)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         borrowingService.delete(id);
     }
 
-    // ✅ NEW: SETTLE (NO DELETE)
     @PutMapping("/{id}/settle")
     public void settle(@PathVariable Long id) {
         borrowingService.settle(id);

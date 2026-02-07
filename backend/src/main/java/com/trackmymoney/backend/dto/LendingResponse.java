@@ -8,5 +8,5 @@ public record LendingResponse(
         Double amount,
         LocalDate lendDate,
         LocalDate dueDate,
-        boolean settled   // ✅ ADD THIS
+        boolean settled
 ) {}

@@ -38,7 +38,6 @@ public class SummaryServiceImpl implements SummaryService {
     @Override
     public MonthlySummaryResponse getMonthlySummary(int year, int month) {
 
-        // 🔐 Resolve logged-in user from JWT
         User user = getLoggedInUser();
 
         LocalDate start = LocalDate.of(year, month, 1);
@@ -87,7 +86,6 @@ public class SummaryServiceImpl implements SummaryService {
         );
     }
 
-    // 🔐 Helper: get logged-in user
     private User getLoggedInUser() {
         String email = SecurityUtils.getCurrentUserEmail();
 

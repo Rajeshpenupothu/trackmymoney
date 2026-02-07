@@ -38,7 +38,7 @@ public class LendingServiceImpl implements LendingService {
         l.setLendDate(r.lendDate());
         l.setDueDate(r.dueDate());
         l.setUser(currentUser());
-        l.setSettled(false); // ✅ DEFAULT
+        l.setSettled(false);
 
         return map(lendingRepository.save(l));
     }
@@ -75,7 +75,6 @@ public class LendingServiceImpl implements LendingService {
                 .toList();
     }
 
-    // ✅ ADD THIS METHOD (REQUIRED FOR SETTLED BUTTON)
     @Override
     public void settle(Long id) {
         Lending l = lendingRepository
@@ -86,7 +85,6 @@ public class LendingServiceImpl implements LendingService {
         lendingRepository.save(l);
     }
 
-    // ✅ UPDATED MAPPER (INCLUDES settled)
     private LendingResponse map(Lending l) {
         return new LendingResponse(
                 l.getId(),

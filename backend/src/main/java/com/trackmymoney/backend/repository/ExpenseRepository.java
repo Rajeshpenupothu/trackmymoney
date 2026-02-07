@@ -10,16 +10,13 @@ import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    // ✅ GET all expenses
     List<Expense> findByUser(User user);
 
-    // ✅ GET expenses by month
     List<Expense> findByUserAndExpenseDateBetween(
             User user,
             LocalDate startDate,
             LocalDate endDate
     );
 
-    // 🔐 REQUIRED for UPDATE & DELETE (NEW)
     Optional<Expense> findByIdAndUser(Long id, User user);
 }

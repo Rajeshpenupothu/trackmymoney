@@ -17,7 +17,6 @@ public class Lending {
     private LocalDate lendDate;
     private LocalDate dueDate;
 
-    // ✅ ADD THIS (same as Borrowing)
     @Column(nullable = false)
     private boolean settled = false;
 
@@ -25,7 +24,6 @@ public class Lending {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // ===== GETTERS =====
     public Long getId() { return id; }
     public String getName() { return name; }
     public Double getAmount() { return amount; }
@@ -34,7 +32,6 @@ public class Lending {
     public boolean isSettled() { return settled; }
     public User getUser() { return user; }
 
-    // ===== SETTERS =====
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setAmount(Double amount) { this.amount = amount; }

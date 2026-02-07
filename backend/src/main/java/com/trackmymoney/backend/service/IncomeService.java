@@ -12,7 +12,6 @@ public interface IncomeService {
 
     void deleteIncome(Long id);
 
-    // 🔐 Logged-in user
     List<IncomeResponse> getIncomesForCurrentUser();
 
     List<IncomeResponse> getIncomesForCurrentUserByMonth(int year, int month);

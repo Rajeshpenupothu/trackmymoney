@@ -15,6 +15,5 @@ public interface LendingService {
 
     List<LendingResponse> getAll();
 
-    // ✅ ADD THIS (for Settled button)
     void settle(Long id);
 }

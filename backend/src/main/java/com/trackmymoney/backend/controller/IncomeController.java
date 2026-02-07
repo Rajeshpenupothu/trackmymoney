@@ -30,7 +30,7 @@ public class IncomeController {
                 HttpStatus.CREATED
         );
     }
-    // ✏️ UPDATE income
+
     @PutMapping("/{id}")
     public ResponseEntity<IncomeResponse> updateIncome(
             @PathVariable Long id,
@@ -41,14 +41,13 @@ public class IncomeController {
         );
     }
 
-    // 🗑 DELETE income
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncome(@PathVariable Long id) {
         incomeService.deleteIncome(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 📄 Get all incomes
     @GetMapping
     public ResponseEntity<List<IncomeResponse>> getAllIncomes() {
         return ResponseEntity.ok(

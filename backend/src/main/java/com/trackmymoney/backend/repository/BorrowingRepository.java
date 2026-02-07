@@ -11,7 +11,6 @@ public interface BorrowingRepository extends JpaRepository<Borrowing, Long> {
 
     List<Borrowing> findByUser(User user);
 
-    // ✅ NEW: fetch only unsettled borrowings
     List<Borrowing> findByUserAndSettledFalse(User user);
 
     Optional<Borrowing> findByIdAndUser(Long id, User user);

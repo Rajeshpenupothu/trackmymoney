@@ -82,7 +82,7 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public List<BorrowingResponse> getAll() {
         return borrowingRepository
-                .findByUser(getUser())   // ✅ RETURN ALL
+                .findByUser(getUser())
                 .stream()
                 .map(this::map)
                 .collect(Collectors.toList());
@@ -95,7 +95,7 @@ public class BorrowingServiceImpl implements BorrowingService {
                 b.getAmount(),
                 b.getBorrowDate(),
                 b.getDueDate(),
-                b.isSettled()          // ✅ IMPORTANT
+                b.isSettled()
         );
     }
 }

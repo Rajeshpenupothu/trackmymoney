@@ -20,7 +20,6 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    // ✅ Get expenses for logged-in user
     @GetMapping
     public ResponseEntity<List<ExpenseResponse>> getMyExpenses() {
         return ResponseEntity.ok(
@@ -28,7 +27,7 @@ public class ExpenseController {
         );
     }
 
-    // ✅ Get expenses by month for logged-in user
+
     @GetMapping("/month")
     public ResponseEntity<List<ExpenseResponse>> getMyExpensesByMonth(
             @RequestParam int year,
@@ -39,7 +38,6 @@ public class ExpenseController {
         );
     }
 
-    // ✅ Add expense
     @PostMapping
     public ResponseEntity<ExpenseResponse> addExpense(
             @Valid @RequestBody CreateExpenseRequest request) {
@@ -50,7 +48,6 @@ public class ExpenseController {
         );
     }
 
-    // 🔵 UPDATE expense (NEW)
     @PutMapping("/{id}")
     public ResponseEntity<ExpenseResponse> updateExpense(
             @PathVariable Long id,
@@ -61,7 +58,6 @@ public class ExpenseController {
         );
     }
 
-    // 🔴 DELETE expense (NEW)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExpense(
             @PathVariable Long id) {

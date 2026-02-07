@@ -21,12 +21,10 @@ public class CreateIncomeRequest {
     @NotNull(message = "Income date is required")
     private LocalDate incomeDate;
 
-    // ✅ CORRECT getter
     public BigDecimal getAmount() {
         return amount;
     }
 
-    // ✅ CORRECT setter
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }

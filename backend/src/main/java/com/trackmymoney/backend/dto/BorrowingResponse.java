@@ -10,7 +10,7 @@ public class BorrowingResponse {
     private BigDecimal amount;
     private LocalDate borrowDate;
     private LocalDate dueDate;
-    private boolean settled; // ✅ ADD THIS
+    private boolean settled;
 
     public BorrowingResponse(
             Long id,

@@ -11,10 +11,8 @@ public interface BorrowingService {
 
     BorrowingResponse update(Long id, BorrowingRequest request);
 
-    // ❌ NOT USED ANYMORE (kept for safety)
     void delete(Long id);
 
-    // ✅ NEW: MARK AS SETTLED (NO DELETE)
     void settle(Long id);
 
     List<BorrowingResponse> getAll();

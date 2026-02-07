@@ -84,7 +84,6 @@ public class TransactionServiceImpl implements TransactionService {
                         new RuntimeException("Transaction not found with id: " + transactionId)
                 );
 
-        // 🔒 Extra safety: ensure transaction belongs to logged-in user
         if (!transaction.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized to settle this transaction");
         }
@@ -95,7 +94,6 @@ public class TransactionServiceImpl implements TransactionService {
         return mapToResponse(saved);
     }
 
-    // 🔐 Resolve logged-in user from JWT
     private User getLoggedInUser() {
         String email = SecurityUtils.getCurrentUserEmail();
 
@@ -105,7 +103,6 @@ public class TransactionServiceImpl implements TransactionService {
                 );
     }
 
-    // 🔁 DTO mapper
     private TransactionResponse mapToResponse(Transaction transaction) {
         return new TransactionResponse(
                 transaction.getId(),
