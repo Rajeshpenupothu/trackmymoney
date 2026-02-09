@@ -64,9 +64,9 @@ public class SummaryServiceImpl implements SummaryService {
                 .stream()
                 .filter(b -> {
                     LocalDate borrowDate = b.getBorrowDate();
-                    return !borrowDate.isBefore(start) && !borrowDate.isAfter(end);
+                    return borrowDate != null && !borrowDate.isBefore(start) && !borrowDate.isAfter(end);
                 })
-                .map(b -> b.getAmount())
+                .map(b -> b.getAmount() != null ? b.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // 🔥 Use LendingRepository to fetch lendings for this month only
@@ -75,9 +75,12 @@ public class SummaryServiceImpl implements SummaryService {
                 .stream()
                 .filter(l -> {
                     LocalDate lendDate = l.getLendDate();
-                    return !lendDate.isBefore(start) && !lendDate.isAfter(end);
+                    return lendDate != null && !lendDate.isBefore(start) && !lendDate.isAfter(end);
                 })
-                .map(l -> new BigDecimal(l.getAmount()))
+                .map(l -> {
+                    Double amount = l.getAmount();
+                    return amount != null ? BigDecimal.valueOf(amount) : BigDecimal.ZERO;
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // 🔥 Calculate unsettled amount from both borrowings and lendings
@@ -87,7 +90,7 @@ public class SummaryServiceImpl implements SummaryService {
         BigDecimal unsettledBorrowed = borrowingRepository
                 .findByUserAndSettledFalse(user)
                 .stream()
-                .map(b -> b.getAmount())
+                .map(b -> b.getAmount() != null ? b.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         // Unsettled lendings (money others owe to you)
@@ -95,7 +98,10 @@ public class SummaryServiceImpl implements SummaryService {
                 .findByUser(user)
                 .stream()
                 .filter(l -> !l.isSettled())
-                .map(l -> new BigDecimal(l.getAmount()))
+                .map(l -> {
+                    Double amount = l.getAmount();
+                    return amount != null ? BigDecimal.valueOf(amount) : BigDecimal.ZERO;
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         unsettled = unsettledBorrowed.add(unsettledLent);
