@@ -41,6 +41,38 @@ function App() {
   const [incomes, setIncomes] = useState([]);
   const [borrowings, setBorrowings] = useState([]);
   const [lendings, setLendings] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(false);
+
+  // Load heavy lists only when Reports is active (or when they are empty and Reports requested)
+  useEffect(() => {
+    const loadReportData = async () => {
+      try {
+        setReportsLoading(true);
+        const [expRes, incRes, borRes, lenRes] = await Promise.all([
+          api.get("/expenses"),
+          api.get("/incomes"),
+          api.get("/borrowings"),
+          api.get("/lendings"),
+        ]);
+
+        setExpenses(expRes.data || []);
+        setIncomes(incRes.data || []);
+        setBorrowings(borRes.data || []);
+        setLendings(lenRes.data || []);
+      } catch (err) {
+        console.error("Failed to load reports data:", err);
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+
+    if (activePage === "Reports") {
+      // only fetch if arrays are empty to avoid repeated loads
+      if (expenses.length === 0 && incomes.length === 0 && borrowings.length === 0 && lendings.length === 0) {
+        loadReportData();
+      }
+    }
+  }, [activePage]);
 
   if (isLoading) {
     return (
@@ -78,7 +110,7 @@ function App() {
         {activePage === "Expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
         {activePage === "Borrowings" && <Borrowings borrowings={borrowings} setBorrowings={setBorrowings} />}
         {activePage === "Lendings" && <Lendings lendings={lendings} setLendings={setLendings} />}
-        {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} />}
+        {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={reportsLoading} />}
         {activePage === "Settings" && <Settings dark={dark} setDark={setDark} />}
         {activePage === "Profile" && <Profile />}
         {activePage === "Help" && <Help />}

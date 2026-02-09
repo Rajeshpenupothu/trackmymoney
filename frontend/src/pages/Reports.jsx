@@ -21,7 +21,7 @@ const MONTHS = [
   "July","August","September","October","November","December",
 ];
 
-function Reports({ incomes, expenses, borrowings, lendings }) {
+function Reports({ incomes, expenses, borrowings, lendings, loading }) {
   const today = new Date();
 
   const [year, setYear] = useState(today.getFullYear());
@@ -29,6 +29,26 @@ function Reports({ incomes, expenses, borrowings, lendings }) {
     today.toLocaleString("default", { month: "long" })
   );
   const [showDownloads, setShowDownloads] = useState(false);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-zinc-800 dark:text-zinc-100">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p>Loading reports data...</p>
+      </div>
+    );
+  }
+
+  // Show message if no data after loading
+  if (!loading && incomes.length === 0 && expenses.length === 0 && borrowings.length === 0 && lendings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-zinc-800 dark:text-zinc-100">
+        <p className="text-lg">No data available for reports.</p>
+        <p className="text-sm text-zinc-500">Add some transactions first.</p>
+      </div>
+    );
+  }
 
 
   /* ===== TOTALS ===== */
@@ -226,9 +246,10 @@ const downloadBorrowLendReport = () => {
 <div className="mb-6">
   <button
     onClick={() => setShowDownloads(!showDownloads)}
-    className="btn w-full"
+    disabled={loading}
+    className={`btn w-full ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
   >
-    Download Report
+    {loading ? "Loading data..." : "Download Report"}
   </button>
 
   {showDownloads && (
