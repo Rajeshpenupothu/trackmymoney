@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/api";
 
 function Income({ incomes, setIncomes }) {
@@ -22,6 +22,25 @@ function Income({ incomes, setIncomes }) {
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toLocaleString("default", { month: "long" })
   );
+
+  // Load incomes on component mount if not provided via props
+  useEffect(() => {
+    if (incomes.length === 0) {
+      const loadIncomes = async () => {
+        try {
+          const res = await api.get("/incomes");
+          setIncomes(res.data.map(i => ({
+            ...i,
+            year: new Date(i.incomeDate).getFullYear(),
+            month: new Date(i.incomeDate).toLocaleString("default", { month: "long" }),
+          })));
+        } catch (error) {
+          console.error("Failed to load incomes:", error);
+        }
+      };
+      loadIncomes();
+    }
+  }, []);
 
   /* ===== SAVE / UPDATE ===== */
   const saveIncome = async (e) => {

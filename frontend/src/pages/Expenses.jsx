@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/api";
 
 function Expenses({ expenses, setExpenses }) {
@@ -23,6 +23,26 @@ function Expenses({ expenses, setExpenses }) {
     new Date().toLocaleString("default", { month: "long" })
   );
   
+  // Load expenses on component mount if not provided via props
+  useEffect(() => {
+    if (expenses.length === 0) {
+      const loadExpenses = async () => {
+        try {
+          const res = await api.get("/expenses");
+          setExpenses(res.data.map(e => ({
+            ...e,
+            year: new Date(e.expenseDate).getFullYear(),
+            month: new Date(e.expenseDate).toLocaleString("default", { month: "long" }),
+            day: new Date(e.expenseDate).getDate(),
+            title: e.description,
+          })));
+        } catch (error) {
+          console.error("Failed to load expenses:", error);
+        }
+      };
+      loadExpenses();
+    }
+  }, []);
 
   /* ===== SAVE / UPDATE ===== */
   const saveExpense = async (e) => {

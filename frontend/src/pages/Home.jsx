@@ -1,66 +1,59 @@
+import { useState, useEffect } from "react";
+import api from "../api/api";
+
 const MONTHS = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December",
 ];
 
 function Home({
-  incomes,
-  expenses,
-  borrowings,
-  lendings,
   selectedYear,
   selectedMonth,
   setSelectedYear,
   setSelectedMonth,
 }) {
-  const today = new Date();
+  const [summary, setSummary] = useState({
+    totalIncome: 0,
+    totalExpense: 0,
+    savings: 0,
+    totalBorrowed: 0,
+    totalLent: 0,
+    unsettledAmount: 0
+  });
+  const [loading, setLoading] = useState(true);
 
-  const filteredIncomes = incomes.filter(
-    (i) => i.year === selectedYear && i.month === selectedMonth
-  );
+  // 🔥 This useEffect replaces the old manual .filter() and .reduce() logic
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        // We call the single aggregated endpoint with filters
+        const response = await api.get("/summary/monthly", {
+          params: { year: selectedYear, month: selectedMonth }
+        });
+        setSummary(response.data);
+      } catch (error) {
+        console.error("Dashboard fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredExpenses = expenses.filter(
-    (e) => e.year === selectedYear && e.month === selectedMonth
-  );
-
-  const filteredBorrowings = borrowings.filter(
-    (b) => b.year === selectedYear && b.month === selectedMonth
-  );
-
-  const filteredLendings = lendings.filter(
-    (l) => l.year === selectedYear && l.month === selectedMonth
-  );
-
-  const totalIncome = filteredIncomes.reduce((s, i) => s + Number(i.amount), 0);
-  const totalExpenses = filteredExpenses.reduce((s, e) => s + Number(e.amount), 0);
-  const totalBorrowed = filteredBorrowings.reduce((s, b) => s + Number(b.amount), 0);
-  const totalLent = filteredLendings.reduce((s, l) => s + Number(l.amount), 0);
-
- const overdueBorrowed = borrowings.reduce((sum, b) => {
-  if (b.settled) return sum;
-  return b.dueDateObj < today
-    ? sum + Number(b.amount)
-    : sum;
-}, 0);
-
-const overdueLent = lendings.reduce((sum, l) => {
-  if (l.settled) return sum;
-  return l.dueDateObj < today
-    ? sum + Number(l.amount)
-    : sum;
-}, 0);
-
+    fetchDashboardData();
+  }, [selectedYear, selectedMonth]); // Re-runs when you change month/year filters
 
   const availableBalance =
-    totalIncome - totalExpenses - totalBorrowed + totalLent;
+    summary.totalIncome - summary.totalExpense - summary.totalBorrowed + summary.totalLent;
+
+  if (loading) {
+    return <div className="p-10 text-center text-black dark:text-white">Waking up server...</div>;
+  }
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold mb-6 text-black dark:text-white">
-Overview</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-black dark:text-white">Overview</h1>
 
-
-      {/* Filters */}
+      {/* Filters - Keep your existing UI */}
       <div className="flex gap-4 mb-8">
         <select
           value={selectedYear}
@@ -83,55 +76,41 @@ Overview</h1>
         </select>
       </div>
 
-      {/* Cards */}
+      {/* Cards using summary data */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-7 mb-6">
-        <Card title="Total Income" value={totalIncome} />
-        <Card title="Total Expenses" value={totalExpenses} />
-        <Card title="Total Borrowed" value={totalBorrowed} />
-        <Card title="Total Lent" value={totalLent} />
+        <Card title="Total Income" value={summary.totalIncome} />
+        <Card title="Total Expenses" value={summary.totalExpense} />
+        <Card title="Total Borrowed" value={summary.totalBorrowed} />
+        <Card title="Total Lent" value={summary.totalLent} />
       </div>
 
-      {/* Overdue */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-6">
-  <div className="card p-6">
-    <h2 className="text-sm text-gray-600 dark:text-gray-200
-">Overdue Borrowed</h2>
-    <p className="text-2xl font-semibold mt-3 text-black dark:text-white">
-₹{overdueBorrowed}</p>
-  </div>
+        <div className="card p-6">
+          <h2 className="text-sm text-gray-600 dark:text-gray-200">Savings</h2>
+          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.savings}</p>
+        </div>
+        <div className="card p-6">
+          <h2 className="text-sm text-gray-600 dark:text-gray-200">Unsettled Amount</h2>
+          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.unsettledAmount}</p>
+        </div>
+      </div>
 
-  <div className="card p-6">
-    <h2 className="text-sm text-gray-600 dark:text-gray-200
-">Overdue Lent</h2>
-    <p className="text-2xl font-semibold mt-3 text-black dark:text-white">
-₹{overdueLent}</p>
-  </div>
-</div>
-
-
-      {/* Balance */}
       <div className="card p-6 mb-8">
-  <h2 className="text-sm text-gray-600 dark:text-gray-200
-">Available Balance</h2>
-  <p className="text-3xl font-semibold mt-3 text-black dark:text-white">
-₹{availableBalance}</p>
-</div>
-
+        <h2 className="text-sm text-gray-600 dark:text-gray-200">Available Balance</h2>
+        <p className="text-3xl font-semibold mt-3 text-black dark:text-white">₹{availableBalance}</p>
+      </div>
     </div>
   );
 }
 
+// Keep your Card component as it is
 function Card({ title, value }) {
   return (
     <div className="card p-7">
       <h2 className="text-sm text-gray-600 dark:text-gray-200">{title}</h2>
-      <p className="text-2xl font-semibold mt-3 text-black dark:text-white">
-        ₹{value}
-      </p>
+      <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{value}</p>
     </div>
   );
 }
-
-
 
 export default Home;

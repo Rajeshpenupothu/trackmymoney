@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/api";
 
 const MONTHS = [
@@ -27,6 +27,24 @@ function Borrowings({ borrowings, setBorrowings }) {
   const [selectedMonth, setSelectedMonth] = useState(
     today.toLocaleString("default", { month: "long" })
   );
+
+  // Load borrowings on component mount if not provided via props
+  useEffect(() => {
+    if (borrowings.length === 0) {
+      const loadBorrowings = async () => {
+        try {
+          const res = await api.get("/borrowings");
+          setBorrowings(res.data.map(b => ({
+            ...b,
+            dueDateObj: new Date(b.dueDate),
+          })));
+        } catch (error) {
+          console.error("Failed to load borrowings:", error);
+        }
+      };
+      loadBorrowings();
+    }
+  }, []);
 
   /* ===== SAVE / UPDATE ===== */
   const saveBorrowing = async (e) => {
