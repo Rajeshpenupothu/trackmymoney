@@ -20,5 +20,9 @@ public interface BorrowingRepository extends JpaRepository<Borrowing, Long> {
     // This allows the DB to sum everything in one go instead of fetching all records
     @Query("SELECT SUM(b.amount) FROM Borrowing b WHERE b.user.id = :userId")
     Double sumByUserId(@Param("userId") Long userId);
+
+    // Sum only overdue, unsettled borrowings for the user
+    @Query("SELECT SUM(b.amount) FROM Borrowing b WHERE b.user.id = :userId AND b.settled = false AND b.dueDate < CURRENT_DATE")
+    Double sumOverdueByUserId(@Param("userId") Long userId);
 }
 	

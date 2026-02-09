@@ -18,4 +18,8 @@ public interface LendingRepository extends JpaRepository<Lending, Long> {
     // This allows the DB to sum everything in one go instead of fetching all records
     @Query("SELECT SUM(l.amount) FROM Lending l WHERE l.user.id = :userId")
     Double sumByUserId(@Param("userId") Long userId);
+
+    // Sum only overdue, unsettled lendings for the user
+    @Query("SELECT SUM(l.amount) FROM Lending l WHERE l.user.id = :userId AND l.settled = false AND l.dueDate < CURRENT_DATE")
+    Double sumOverdueByUserId(@Param("userId") Long userId);
 }

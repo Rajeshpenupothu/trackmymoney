@@ -18,7 +18,9 @@ function Home({
     savings: 0,
     totalBorrowed: 0,
     totalLent: 0,
-    unsettledAmount: 0
+    unsettledAmount: 0,
+    overdueBorrowed: 0,
+    overdueLent: 0
   });
   const [fetching, setFetching] = useState(false); // background fetch when switching month/year
 
@@ -79,6 +81,19 @@ function Home({
         <Card title="Total Expenses" value={summary.totalExpense} fetching={fetching} />
         <Card title="Total Borrowed" value={summary.totalBorrowed} fetching={fetching} />
         <Card title="Total Lent" value={summary.totalLent} fetching={fetching} />
+      </div>
+
+      {/* Overdue borrowed / lent */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-6">
+        <div className="card p-6">
+          <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Borrowed</h2>
+          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueBorrowed || 0}</p>
+        </div>
+
+        <div className="card p-6">
+          <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Lent</h2>
+          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueLent || 0}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-6">
