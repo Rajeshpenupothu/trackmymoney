@@ -23,8 +23,9 @@ function Income({ incomes, setIncomes }) {
     new Date().toLocaleString("default", { month: "long" })
   );
 
-  // Load incomes on component mount if not provided via props
+  // Load incomes ONLY when this page is actually viewed (not on initial app mount)
   useEffect(() => {
+    // Only load if array is empty and we haven't loaded yet
     if (incomes.length === 0) {
       const loadIncomes = async () => {
         try {

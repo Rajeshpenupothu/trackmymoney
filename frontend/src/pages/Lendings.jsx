@@ -27,8 +27,9 @@ function Lendings({ lendings, setLendings }) {
     today.toLocaleString("default", { month: "long" })
   );
 
-  // Load lendings on component mount if not provided via props
+  // Load lendings ONLY when this page is actually viewed (not on initial app mount)
   useEffect(() => {
+    // Only load if array is empty and we haven't loaded yet
     if (lendings.length === 0) {
       const loadLendings = async () => {
         try {

@@ -23,8 +23,9 @@ function Expenses({ expenses, setExpenses }) {
     new Date().toLocaleString("default", { month: "long" })
   );
   
-  // Load expenses on component mount if not provided via props
+  // Load expenses ONLY when this page is actually viewed (not on initial app mount)
   useEffect(() => {
+    // Only load if array is empty and we haven't loaded yet
     if (expenses.length === 0) {
       const loadExpenses = async () => {
         try {

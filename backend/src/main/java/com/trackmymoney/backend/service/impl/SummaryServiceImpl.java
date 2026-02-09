@@ -49,22 +49,31 @@ public class SummaryServiceImpl implements SummaryService {
                 .map(i -> i.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-
         BigDecimal totalExpense = expenseRepository
                 .findByUserAndExpenseDateBetween(user, start, end)
                 .stream()
                 .map(e -> e.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // 🔥 Filter borrowings by date range (month) instead of fetching ALL
         BigDecimal borrowed = transactionRepository
                 .findByUserIdAndType(user.getId(), TransactionType.BORROW)
                 .stream()
+                .filter(t -> {
+                    LocalDate txDate = t.getBorrowDate() != null ? t.getBorrowDate().toLocalDateTime().toLocalDate() : LocalDate.now();
+                    return !txDate.isBefore(start) && !txDate.isAfter(end);
+                })
                 .map(t -> t.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // 🔥 Filter lendings by date range (month) instead of fetching ALL
         BigDecimal lent = transactionRepository
                 .findByUserIdAndType(user.getId(), TransactionType.LEND)
                 .stream()
+                .filter(t -> {
+                    LocalDate txDate = t.getLendDate() != null ? t.getLendDate().toLocalDateTime().toLocalDate() : LocalDate.now();
+                    return !txDate.isBefore(start) && !txDate.isAfter(end);
+                })
                 .map(t -> t.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
