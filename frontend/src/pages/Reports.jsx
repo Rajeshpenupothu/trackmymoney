@@ -13,8 +13,7 @@ import {
 } from "recharts";
 
 import { useState } from "react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import api from "../api/api";
 
 const MONTHS = [
   "January","February","March","April","May","June",
@@ -93,125 +92,81 @@ const flowData = [
   );
 
   /* ===== PDF EXPORT ===== */
-  const downloadPDF = () => {
-  const doc = new jsPDF();
+  const downloadFinanceReport = async () => {
+    try {
+      const response = await api.get(`/reports/finance-report?year=${year}&month=${month}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Finance_Report_${month}_${year}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading finance report:', error);
+      alert('Failed to download report');
+    }
+  };
 
-  doc.setFontSize(20);
-  doc.text("TrackMyMoney - Expense Report", 14, 20);
+  const downloadExpenseReport = async () => {
+    try {
+      const response = await api.get(`/reports/expense-report?year=${year}&month=${month}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Expenses_${month}_${year}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading expense report:', error);
+      alert('Failed to download report');
+    }
+  };
 
-  doc.setFontSize(12);
-  doc.text(`Month: ${month} ${year}`, 14, 30);
+  const downloadIncomeReport = async () => {
+    try {
+      const response = await api.get(`/reports/income-report?year=${year}&month=${month}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Income_${month}_${year}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading income report:', error);
+      alert('Failed to download report');
+    }
+  };
 
-  // Filter expenses for month
-  const expenseRows = expenses
-    .filter(e => e.year === year && e.month === month)
-    .sort((a, b) => a.day - b.day)
-    .map(e => [
-      `${e.day} ${e.month}`,
-      e.title || e.description,
-      e.category,
-      e.amount,
-    ]);
-
-  autoTable(doc, {
-    startY: 40,
-    head: [["Date", "Title", "Category", "Amount (₹)"]],
-    body: expenseRows.length ? expenseRows : [["No expenses", "-", "-", "-"]],
-  });
-
-  doc.save(`Expenses_${month}_${year}.pdf`);
-};
-const downloadFinanceReport = () => {
-  const doc = new jsPDF();
-
-  doc.setFontSize(20);
-  doc.text("Finance Summary Report", 14, 20);
-  doc.text(`Period: ${month} ${year}`, 14, 30);
-
-  autoTable(doc, {
-    startY: 40,
-    head: [["Type", "Amount (₹)"]],
-    body: [
-      ["Income", mIncome],
-      ["Expenses", mExpenses],
-      ["Borrowed", yBorrowed],
-      ["Lent", yLent],
-    ],
-  });
-
-  doc.save(`Finance_Report_${month}_${year}.pdf`);
-};
-const downloadExpenseReport = () => {
-  const doc = new jsPDF();
-
-  doc.text(`Expense Report - ${month} ${year}`, 14, 20);
-
-  const rows = expenses
-    .filter(e => e.year === year && e.month === month)
-    .sort((a, b) => a.day - b.day)
-    .map(e => [
-      `${e.day} ${e.month}`,
-      e.title || e.description,
-      e.category,
-      e.amount,
-    ]);
-
-  autoTable(doc, {
-    startY: 30,
-    head: [["Date", "Title", "Category", "Amount (₹)"]],
-    body: rows.length ? rows : [["No data", "-", "-", "-"]],
-  });
-
-  doc.save(`Expenses_${month}_${year}.pdf`);
-};
-const downloadIncomeReport = () => {
-  const doc = new jsPDF();
-
-  doc.text(`Income Report - ${month} ${year}`, 14, 20);
-
-  const rows = incomes
-    .filter(i => i.year === year && i.month === month)
-    .map(i => [
-      `${i.day} ${i.month}`,
-      i.title || "Income",
-      i.amount,
-    ]);
-
-  autoTable(doc, {
-    startY: 30,
-    head: [["Date", "Source", "Amount (₹)"]],
-    body: rows.length ? rows : [["No data", "-", "-"]],
-  });
-
-  doc.save(`Income_${month}_${year}.pdf`);
-};
-const downloadBorrowLendReport = () => {
-  const doc = new jsPDF();
-
-  doc.text(`Borrow & Lend Report - ${month} ${year}`, 14, 20);
-
-  const borrowRows = borrowings.map(b => [
-    b.name,
-    "Borrowed",
-    `${b.dueDay} ${b.month}`,
-    b.amount,
-  ]);
-
-  const lendRows = lendings.map(l => [
-    l.name,
-    "Lent",
-    `${l.dueDay} ${l.month}`,
-    l.amount,
-  ]);
-
-  autoTable(doc, {
-    startY: 30,
-    head: [["Name", "Type", "Due Date", "Amount (₹)"]],
-    body: [...borrowRows, ...lendRows],
-  });
-
-  doc.save(`Borrow_Lend_${month}_${year}.pdf`);
-};
+  const downloadBorrowLendReport = async () => {
+    try {
+      const response = await api.get(`/reports/borrow-lend-report?year=${year}&month=${month}`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Borrow_Lend_${month}_${year}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading borrow/lend report:', error);
+      alert('Failed to download report');
+    }
+  };
 
 
   return (
