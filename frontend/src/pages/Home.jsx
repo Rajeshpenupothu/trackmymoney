@@ -46,7 +46,14 @@ function Home({
     summary.totalIncome - summary.totalExpense - summary.totalBorrowed + summary.totalLent;
 
   if (loading) {
-    return <div className="p-10 text-center text-black dark:text-white">Waking up server...</div>;
+    return (
+      <div className="p-10 text-center">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="text-black dark:text-white">Waking up server...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
