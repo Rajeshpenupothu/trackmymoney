@@ -31,4 +31,9 @@ static_sites:
       - key: VITE_API_BASE_URL
         value: "${VITE_API_BASE_URL}"
 
+  - type: cron
+    name: backend-pinger
+    schedule: "*/14 * * * *"
+    command: curl -sf http://trackmymoney-backend:8080/
+
 # Optional: add disks, cron jobs, or services for other parts of the app here.
