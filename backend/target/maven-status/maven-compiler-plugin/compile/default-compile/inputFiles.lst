@@ -50,6 +50,7 @@ C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackm
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\service\impl\TransactionServiceImpl.java
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\exception\DuplicateEmailException.java
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\service\BorrowingService.java
+C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\config\DatabaseKeepAlive.java
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\controller\IncomeController.java
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\service\SummaryService.java
 C:\Users\rajes\Desktop\All Folders\TrackMyMoney\backend\src\main\java\com\trackmymoney\backend\TrackmymoneyBackendApplication.java

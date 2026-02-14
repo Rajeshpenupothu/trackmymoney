@@ -53,6 +53,7 @@ com\trackmymoney\backend\security\SecurityUtils.class
 com\trackmymoney\backend\dto\CreateTransactionRequest.class
 com\trackmymoney\backend\service\IncomeService.class
 com\trackmymoney\backend\service\TransactionService.class
+com\trackmymoney\backend\config\DatabaseKeepAlive.class
 com\trackmymoney\backend\controller\AuthController.class
 com\trackmymoney\backend\dto\LoginRequest.class
 com\trackmymoney\backend\config\PasswordConfig.class
