@@ -29,30 +29,11 @@ public class DashboardServiceImpl implements DashboardService {
         
         LocalDate today = LocalDate.now();
 
-        // --- DEBUGGING START ---
-        System.out.println("--- DEBUG OVERDUE CHECK ---");
-        System.out.println("Today is: " + today);
-        
-        List<Borrowing> allBorrowings = borrowingRepository.findByUser(user);
-        for (Borrowing b : allBorrowings) {
-            System.out.println("Item: " + b.getName() + 
-                               " | Amount: " + b.getAmount() + 
-                               " | Due: " + b.getDueDate() + 
-                               " | Settled in DB: " + b.isSettled());
-            
-            if (!b.isSettled() && (b.getDueDate().isBefore(today) || b.getDueDate().equals(today))) {
-                System.out.println("   -> THIS SHOULD BE OVERDUE!");
-            } else {
-                System.out.println("   -> Not overdue (or is settled)");
-            }
-        }
-        // --- DEBUGGING END ---
-
         // 1. Fetch Totals
         BigDecimal totalIncome = incomeRepository.sumByUserId(user.getId());
         BigDecimal totalExpense = expenseRepository.sumByUserId(user.getId());
-        BigDecimal totalBorrowed = borrowingRepository.sumByUserId(user.getId());
-        BigDecimal totalLent = lendingRepository.sumByUserId(user.getId());
+        BigDecimal totalBorrowed = borrowingRepository.sumOfUnsettledBorrowingsByUserId(user.getId());
+        BigDecimal totalLent = lendingRepository.sumOfUnsettledLendingsByUserId(user.getId());
         
         // 2. Fetch Overdue (Make sure Repositories use <= :today)
         BigDecimal totalOverdueBorrowed = borrowingRepository.sumOverdueByUserId(user.getId(), today);

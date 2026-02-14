@@ -14,13 +14,16 @@ import java.util.Optional;
 public interface BorrowingRepository extends JpaRepository<Borrowing, Long> {
 
     List<Borrowing> findByUser(User user);
-    
+
     List<Borrowing> findByUserAndSettledFalse(User user);
 
     List<Borrowing> findByUserAndDueDateBetween(User user, LocalDate start, LocalDate end);
 
     Optional<Borrowing> findByIdAndUser(Long id, User user);
-    
+
+    @Query("SELECT SUM(b.amount) FROM Borrowing b WHERE b.user.id = :userId AND b.settled = false")
+    BigDecimal sumOfUnsettledBorrowingsByUserId(@Param("userId") Long userId);
+
     @Query("SELECT SUM(b.amount) FROM Borrowing b WHERE b.user.id = :userId")
     BigDecimal sumByUserId(@Param("userId") Long userId);
 
