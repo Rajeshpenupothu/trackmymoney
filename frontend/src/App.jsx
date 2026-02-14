@@ -10,7 +10,8 @@ import Login from "./pages/Login";
 import Reports from "./pages/Reports";
 import Help from "./pages/Help";
 import { useAuth } from "./context/AuthContext";
-import Profile from "./pages/Profile"; 
+import Profile from "./pages/Profile";
+import Categories from "./pages/Categories";
 import api from "./api/api";
 
 function App() {
@@ -105,12 +106,13 @@ function App() {
             setSelectedMonth={setSelectedMonth}
           />
         )}
-        
+
         {activePage === "Income" && <Income incomes={incomes} setIncomes={setIncomes} />}
         {activePage === "Expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
         {activePage === "Borrowings" && <Borrowings borrowings={borrowings} setBorrowings={setBorrowings} />}
         {activePage === "Lendings" && <Lendings lendings={lendings} setLendings={setLendings} />}
         {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={reportsLoading} />}
+        {activePage === "Categories" && <Categories />}
         {activePage === "Settings" && <Settings dark={dark} setDark={setDark} />}
         {activePage === "Profile" && <Profile />}
         {activePage === "Help" && <Help />}

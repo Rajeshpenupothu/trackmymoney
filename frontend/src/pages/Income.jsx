@@ -13,8 +13,8 @@ function Income({ incomes, setIncomes }) {
   const [error, setError] = useState("");
 
   const months = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
 
   // ✅ filter states
@@ -23,24 +23,43 @@ function Income({ incomes, setIncomes }) {
     new Date().toLocaleString("default", { month: "long" })
   );
 
-  // Load incomes ONLY when this page is actually viewed (not on initial app mount)
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  // Load incomes and categories
   useEffect(() => {
-    // Only load if array is empty and we haven't loaded yet
-    if (incomes.length === 0) {
-      const loadIncomes = async () => {
-        try {
+    const fetchData = async () => {
+      try {
+        // Fetch categories
+        const catRes = await api.get("/categories?type=INCOME");
+        if (catRes.data.length > 0) {
+          setCategories(catRes.data);
+          setCategory(catRes.data[0].name);
+        } else {
+          setCategories([
+            { name: "Salary", icon: "💵" },
+            { name: "Freelance", icon: "💻" },
+            { name: "Investment", icon: "📈" },
+            { name: "Gift", icon: "🎁" },
+            { name: "Other", icon: "➕" }
+          ]);
+          setCategory("Salary");
+        }
+
+        // Only load if array is empty
+        if (incomes.length === 0) {
           const res = await api.get("/incomes");
           setIncomes(res.data.map(i => ({
             ...i,
             year: new Date(i.incomeDate).getFullYear(),
             month: new Date(i.incomeDate).toLocaleString("default", { month: "long" }),
           })));
-        } catch (error) {
-          console.error("Failed to load incomes:", error);
         }
-      };
-      loadIncomes();
-    }
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   /* ===== SAVE / UPDATE ===== */
@@ -60,6 +79,7 @@ function Income({ incomes, setIncomes }) {
       if (editingId) {
         const res = await api.put(`/incomes/${editingId}`, {
           source,
+          category,
           amount: amount.toString(),
           incomeDate,
         });
@@ -70,12 +90,12 @@ function Income({ incomes, setIncomes }) {
           incomes.map((i) =>
             i.id === editingId
               ? {
-                  ...updated,
-                  year: new Date(updated.incomeDate).getFullYear(),
-                  month: new Date(updated.incomeDate).toLocaleString("default", {
-                    month: "long",
-                  }),
-                }
+                ...updated,
+                year: new Date(updated.incomeDate).getFullYear(),
+                month: new Date(updated.incomeDate).toLocaleString("default", {
+                  month: "long",
+                }),
+              }
               : i
           )
         );
@@ -84,6 +104,7 @@ function Income({ incomes, setIncomes }) {
       } else {
         const res = await api.post("/incomes", {
           source,
+          category,
           amount: amount.toString(),
           incomeDate,
         });
@@ -130,130 +151,145 @@ function Income({ incomes, setIncomes }) {
       if (!groupedIncomes[key]) groupedIncomes[key] = [];
       groupedIncomes[key].push(i);
     });
-const startEdit = (i) => {
-  setSource(i.source);
-  setAmount(i.amount);
-  setYear(i.year);
-  setMonth(i.month);
-  setEditingId(i.id);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+  const startEdit = (i) => {
+    setSource(i.source);
+    setCategory(i.category || categories[0]?.name || "");
+    setAmount(i.amount);
+    setYear(i.year);
+    setMonth(i.month);
+    setEditingId(i.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-  <div>
-    <h1 className="text-2xl font-semibold mb-4">Income</h1>
+    <div>
+      <h1 className="text-2xl font-semibold mb-4">Income</h1>
 
-    <div className="flex gap-8 items-start">
+      <div className="flex gap-8 items-start">
 
-      {/* LEFT — FORM */}
-      <form onSubmit={saveIncome} className="card p-6 w-1/2 h-fit">
-        {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+        {/* LEFT — FORM */}
+        <form onSubmit={saveIncome} className="card p-6 w-1/2 h-fit">
+          {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
-        <label className="text-sm font-semibold mb-1 block">Source</label>
-        <input
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className="input mb-3"
-        />
+          <label className="text-sm font-semibold mb-1 block">Source</label>
+          <input
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className="input mb-3"
+            placeholder="e.g. Google, Client X"
+          />
 
-        <label className="text-sm font-semibold mb-1 block">Amount (₹)</label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="input mb-3"
-        />
-
-        <label className="text-sm font-semibold mb-1 block">Date</label>
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <select value={year} onChange={(e)=>setYear(Number(e.target.value))} className="input">
-            {[2024,2025,2026].map(y=> <option key={y}>{y}</option>)}
+          <label className="text-sm font-semibold mb-1 block">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="input mb-3"
+          >
+            {categories.map((cat) => (
+              <option key={cat.name} value={cat.name}>
+                {cat.icon ? cat.icon + " " : ""}{cat.name}
+              </option>
+            ))}
           </select>
 
-          <select value={month} onChange={(e)=>setMonth(e.target.value)} className="input">
-            {months.map(m=> <option key={m}>{m}</option>)}
-          </select>
-        </div>
+          <label className="text-sm font-semibold mb-1 block">Amount (₹)</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="input mb-3"
+          />
 
-        <button className="btn block hover w-full mt-3">
-          {editingId ? "Update Income" : "Add Income"}
-        </button>
-      </form>
-
-
-      {/* RIGHT — LIST */}
-      <div className="card p-6 w-1/2 max-h-[600px] overflow-y-auto">
-        <div className="border-b border-[#CFD5D7] dark:border-[#6b6b6b] pb-4 mb-4">
-          <h2 className="font-semibold mb-3">Income List</h2>
-
-          <div className="flex gap-3">
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="input"
-            >
-              {[2024, 2025, 2026].map((y) => (
-                <option key={y}>{y}</option>
-              ))}
+          <label className="text-sm font-semibold mb-1 block">Date</label>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="input">
+              {[2024, 2025, 2026].map(y => <option key={y}>{y}</option>)}
             </select>
 
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="input"
-            >
-              {months.map((m) => (
-                <option key={m}>{m}</option>
-              ))}
+            <select value={month} onChange={(e) => setMonth(e.target.value)} className="input">
+              {months.map(m => <option key={m}>{m}</option>)}
             </select>
           </div>
-        </div>
 
-        <div>
-          {Object.keys(groupedIncomes).map((group) => (
-            <div key={group} className="mb-4">
-              <h3 className="text-sm font-semibold mb-2">{group}</h3>
+          <button className="btn block hover w-full mt-3">
+            {editingId ? "Update Income" : "Add Income"}
+          </button>
+        </form>
 
-              {groupedIncomes[group].map((i) => (
-                <div
-  key={i.id}
-  className="flex justify-between items-center 
+
+        {/* RIGHT — LIST */}
+        <div className="card p-6 w-1/2 max-h-[600px] overflow-y-auto">
+          <div className="border-b border-[#CFD5D7] dark:border-[#6b6b6b] pb-4 mb-4">
+            <h2 className="font-semibold mb-3">Income List</h2>
+
+            <div className="flex gap-3">
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="input"
+              >
+                {[2024, 2025, 2026].map((y) => (
+                  <option key={y}>{y}</option>
+                ))}
+              </select>
+
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="input"
+              >
+                {months.map((m) => (
+                  <option key={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            {Object.keys(groupedIncomes).map((group) => (
+              <div key={group} className="mb-4">
+                <h3 className="text-sm font-semibold mb-2">{group}</h3>
+
+                {groupedIncomes[group].map((i) => (
+                  <div
+                    key={i.id}
+                    className="flex justify-between items-center 
     border border-[#CFD5D7] 
     dark:border-[#6b6b6b] 
     rounded p-3 mb-2"
->
-  <div>
-    <p className="font-medium">{i.source}</p>
-  </div>
+                  >
+                    <div>
+                      <p className="font-medium">{i.source}</p>
+                    </div>
 
-  <div className="flex items-center gap-3">
-    <span className="font-semibold">₹{i.amount}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold">₹{i.amount}</span>
 
-    <button
-      onClick={() => startEdit(i)}
-      className="text-blue-600 text-xs border px-2 rounded"
-    >
-      Edit
-    </button>
+                      <button
+                        onClick={() => startEdit(i)}
+                        className="text-blue-600 text-xs border px-2 rounded"
+                      >
+                        Edit
+                      </button>
 
-    <button
-      onClick={() => deleteIncome(i.id)}
-      className="text-red-600 text-xs border px-2 rounded"
-    >
-      Delete
-    </button>
-  </div>
-</div>
+                      <button
+                        onClick={() => deleteIncome(i.id)}
+                        className="text-red-600 text-xs border px-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
 
-              ))}
-            </div>
-          ))}
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
-);
+  );
 
 
 }
