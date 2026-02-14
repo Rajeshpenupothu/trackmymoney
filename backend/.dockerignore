@@ -13,4 +13,5 @@ target/
 *.iml
 node_modules/
 .vscode/
-.resources/
+application.properties
+
