@@ -27,6 +27,7 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
   );
   const [showDownloads, setShowDownloads] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null); // 'expenses' or 'income'
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Show loading state
   if (loading) {
@@ -90,80 +91,52 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
       }, {})
   );
 
-  /* ===== PDF EXPORT ===== */
-  const downloadFinanceReport = async () => {
+  /* ===== UNIFIED DOWNLOAD HANDLER ===== */
+  const handleDownload = async (type, format = 'pdf') => {
+    if (isDownloading) return;
+    setIsDownloading(true);
     try {
-      const response = await api.get(`/reports/finance-report?year=${year}&month=${month}`, {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Finance_Report_${month}_${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading finance report:', error);
-      alert('Failed to download report');
-    }
-  };
+      let endpoint = "";
+      let filename = "";
+      let params = {};
 
-  const downloadExpenseReport = async () => {
-    try {
-      const response = await api.get(`/reports/expense-report?year=${year}&month=${month}`, {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Expenses_${month}_${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading expense report:', error);
-      alert('Failed to download report');
-    }
-  };
+      if (format === 'pdf') {
+        endpoint = `/reports/${type}`;
+        params = { year, month };
 
-  const downloadIncomeReport = async () => {
-    try {
-      const response = await api.get(`/reports/income-report?year=${year}&month=${month}`, {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Income_${month}_${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading income report:', error);
-      alert('Failed to download report');
-    }
-  };
+        // Map types to filename prefixes
+        const names = {
+          'finance-report': 'Finance_Report',
+          'expense-report': 'Expenses',
+          'income-report': 'Income',
+          'borrow-lend-report': 'Borrow_Lend'
+        };
+        filename = `${names[type] || 'Report'}_${month}_${year}.pdf`;
+      } else {
+        const { startDate, endDate } = getFilterDates();
+        endpoint = `/export/${type}/csv`;
+        params = { startDate, endDate };
+        filename = `${type.charAt(0).toUpperCase() + type.slice(1)}_${month}_${year}.csv`;
+      }
 
-  const downloadBorrowLendReport = async () => {
-    try {
-      const response = await api.get(`/reports/borrow-lend-report?year=${year}&month=${month}`, {
+      const response = await api.get(endpoint, {
+        params,
         responseType: 'blob'
       });
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Borrow_Lend_${month}_${year}.pdf`);
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading borrow/lend report:', error);
+      console.error(`Error downloading ${type}:`, error);
       alert('Failed to download report');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -173,46 +146,6 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
     const lastDay = new Date(year, mIndex, 0).getDate();
     const eDate = `${year}-${String(mIndex).padStart(2, '0')}-${lastDay}`;
     return { startDate: sDate, endDate: eDate };
-  };
-
-  const downloadExpensesCsv = async () => {
-    try {
-      const { startDate, endDate } = getFilterDates();
-      const response = await api.get('/export/expenses/csv', {
-        params: { startDate, endDate },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Expenses_${month}_${year}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (error) {
-      console.error('Error downloading CSV:', error);
-      alert('Failed to download CSV');
-    }
-  };
-
-  const downloadIncomeCsv = async () => {
-    try {
-      const { startDate, endDate } = getFilterDates();
-      const response = await api.get('/export/incomes/csv', {
-        params: { startDate, endDate },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Incomes_${month}_${year}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (error) {
-      console.error('Error downloading CSV:', error);
-      alert('Failed to download CSV');
-    }
   };
 
 
@@ -249,25 +182,32 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
       <div className="mb-6">
         <button
           onClick={() => setShowDownloads(!showDownloads)}
-          disabled={loading}
-          className={`btn w-full ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={loading || isDownloading}
+          className={`btn w-full ${(loading || isDownloading) ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          {loading ? "Loading data..." : "Download Report"}
+          {loading ? "Loading data..." : showDownloads ? "Close Downloads" : "Download Report"}
         </button>
 
         {showDownloads && (
           <div className="mt-4 max-w-md space-y-3">
             {/* Primary Reports (Single Format) */}
             <button
-              onClick={downloadFinanceReport}
-              className="w-full flex items-center gap-3 p-3 rounded-lg
+              onClick={() => handleDownload('finance-report')}
+              disabled={isDownloading}
+              className={`w-full flex items-center gap-3 p-3 rounded-lg
                          bg-zinc-800 border border-zinc-700
-                         hover:bg-zinc-700 hover:border-zinc-500
-                         transition-all duration-300"
+                         ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700 hover:border-zinc-500'}
+                         transition-all duration-300`}
             >
-              <span className="text-xl">📊</span>
+              {isDownloading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <span className="text-xl">📊</span>
+              )}
               <div className="text-left">
-                <p className="font-medium text-white text-sm">Finance Report</p>
+                <p className="font-medium text-white text-sm">
+                  {isDownloading ? "Generating PDF..." : "Finance Report"}
+                </p>
                 <p className="text-[11px] text-zinc-400">Summary of income, expenses, borrow & lend</p>
               </div>
             </button>
@@ -276,8 +216,10 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
             <div className="space-y-2">
               <button
                 onClick={() => setActiveCategory(activeCategory === 'expenses' ? null : 'expenses')}
+                disabled={isDownloading}
                 className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-300
-                            ${activeCategory === 'expenses' ? 'bg-zinc-700 border-indigo-500' : 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700'}`}
+                            ${activeCategory === 'expenses' ? 'bg-zinc-700 border-indigo-500' : 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700'}
+                            ${isDownloading ? 'opacity-50 cursor-wait' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">🧾</span>
@@ -292,17 +234,29 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
               {activeCategory === 'expenses' && (
                 <div className="grid grid-cols-2 gap-2 pl-4">
                   <button
-                    onClick={downloadExpenseReport}
-                    className="flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition"
+                    onClick={() => handleDownload('expense-report')}
+                    disabled={isDownloading}
+                    className={`flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 transition
+                                ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700'}`}
                   >
-                    <span className="text-lg">📄</span>
+                    {isDownloading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span className="text-lg">📄</span>
+                    )}
                     <span className="text-[10px] text-white">Download PDF</span>
                   </button>
                   <button
-                    onClick={downloadExpensesCsv}
-                    className="flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition"
+                    onClick={() => handleDownload('expenses', 'csv')}
+                    disabled={isDownloading}
+                    className={`flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 transition
+                                ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700'}`}
                   >
-                    <span className="text-lg">📊</span>
+                    {isDownloading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span className="text-lg">📊</span>
+                    )}
                     <span className="text-[10px] text-white">Download CSV</span>
                   </button>
                 </div>
@@ -313,8 +267,10 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
             <div className="space-y-2">
               <button
                 onClick={() => setActiveCategory(activeCategory === 'income' ? null : 'income')}
+                disabled={isDownloading}
                 className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-300
-                            ${activeCategory === 'income' ? 'bg-zinc-700 border-indigo-500' : 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700'}`}
+                            ${activeCategory === 'income' ? 'bg-zinc-700 border-indigo-500' : 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700'}
+                            ${isDownloading ? 'opacity-50 cursor-wait' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">💰</span>
@@ -329,17 +285,29 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
               {activeCategory === 'income' && (
                 <div className="grid grid-cols-2 gap-2 pl-4">
                   <button
-                    onClick={downloadIncomeReport}
-                    className="flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition"
+                    onClick={() => handleDownload('income-report')}
+                    disabled={isDownloading}
+                    className={`flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 transition
+                                ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700'}`}
                   >
-                    <span className="text-lg">📄</span>
+                    {isDownloading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span className="text-lg">📄</span>
+                    )}
                     <span className="text-[10px] text-white">Download PDF</span>
                   </button>
                   <button
-                    onClick={downloadIncomeCsv}
-                    className="flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition"
+                    onClick={() => handleDownload('incomes', 'csv')}
+                    disabled={isDownloading}
+                    className={`flex flex-col items-center p-2 rounded-lg bg-zinc-800 border border-zinc-700 transition
+                                ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700'}`}
                   >
-                    <span className="text-lg">📊</span>
+                    {isDownloading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span className="text-lg">📊</span>
+                    )}
                     <span className="text-[10px] text-white">Download CSV</span>
                   </button>
                 </div>
@@ -347,22 +315,27 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
             </div>
 
             <button
-              onClick={downloadBorrowLendReport}
-              className="w-full flex items-center gap-3 p-3 rounded-lg
+              onClick={() => handleDownload('borrow-lend-report')}
+              disabled={isDownloading}
+              className={`w-full flex items-center gap-3 p-3 rounded-lg
                          bg-zinc-800 border border-zinc-700
-                         hover:bg-zinc-700 hover:border-zinc-500
-                         transition-all duration-300"
+                         ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:bg-zinc-700 hover:border-zinc-500'}
+                         transition-all duration-300`}
             >
-              <span className="text-xl">🤝</span>
+              {isDownloading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <span className="text-xl">🤝</span>
+              )}
               <div className="text-left">
-                <p className="font-medium text-white text-sm">Borrow / Lend Report</p>
+                <p className="font-medium text-white text-sm">
+                  {isDownloading ? "Generating PDF..." : "Borrow / Lend Report"}
+                </p>
                 <p className="text-[11px] text-zinc-400">All borrowings and lendings status</p>
               </div>
             </button>
           </div>
         )}
-
-
       </div>
 
       {/* PIE CHART */}
