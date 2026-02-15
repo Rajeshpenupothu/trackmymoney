@@ -29,6 +29,11 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("Server is up");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(
             @Valid @RequestBody CreateUserRequest request) {

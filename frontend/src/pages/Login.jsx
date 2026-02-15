@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/api";
 import "./auth.css";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
@@ -18,6 +19,19 @@ function Login() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isWakingUp, setIsWakingUp] = useState(false);
+
+  // 🚀 Proactive server wakeup on mount
+  useEffect(() => {
+    const wakeup = async () => {
+      try {
+        await api.get("/auth/health");
+      } catch (err) {
+        // Ignore error, we just want to wake up Render
+      }
+    };
+    wakeup();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -69,7 +83,15 @@ function Login() {
   const handleDemoLogin = async () => {
     setError("");
     setSuccess("");
+
+    // If it takes more than 2s, show "Waking up server"
+    const timer = setTimeout(() => setIsWakingUp(true), 2000);
+
     const ok = await login("demo@gmail.com", "demo123");
+
+    clearTimeout(timer);
+    setIsWakingUp(false);
+
     if (!ok) {
       setError("Demo login failed. Please contact the administrator.");
     }
@@ -86,7 +108,7 @@ function Login() {
                      hover:bg-indigo-700 transition-all transform hover:scale-105
                      disabled:bg-indigo-400 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Wait..." : "Demo"}
+          {isLoading ? (isWakingUp ? "Waking up server..." : "Wait...") : "Demo"}
         </button>
       </div>
 
