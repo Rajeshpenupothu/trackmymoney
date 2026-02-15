@@ -259,25 +259,25 @@ function Lendings({ lendings, setLendings }) {
                     </div>
 
                     <div className="flex gap-2 items-center">
-                      <span className="font-semibold">₹{l.amount}</span>
+                      <span className="font-semibold mr-2">₹{l.amount}</span>
 
                       <button
                         onClick={() => markSettled(l.id)}
-                        className="text-green-600 text-xs border px-2 rounded"
+                        className="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-emerald-100 transition"
                       >
                         Settled
                       </button>
 
                       <button
                         onClick={() => startEdit(l)}
-                        className="text-blue-600 text-xs border px-2 rounded"
+                        className="text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-indigo-100 transition"
                       >
                         Edit
                       </button>
 
                       <button
                         onClick={() => deleteLending(l.id)}
-                        className="text-red-600 text-xs border px-2 rounded"
+                        className="text-rose-600 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-rose-100 transition"
                       >
                         Delete
                       </button>

@@ -222,18 +222,18 @@ function Income({ incomes, setIncomes }) {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="font-semibold">₹{i.amount}</span>
+                      <span className="font-semibold mr-2">₹{i.amount}</span>
 
                       <button
                         onClick={() => startEdit(i)}
-                        className="text-blue-600 text-xs border px-2 rounded"
+                        className="text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-indigo-100 transition"
                       >
                         Edit
                       </button>
 
                       <button
                         onClick={() => deleteIncome(i.id)}
-                        className="text-red-600 text-xs border px-2 rounded"
+                        className="text-rose-600 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-rose-100 transition"
                       >
                         Delete
                       </button>

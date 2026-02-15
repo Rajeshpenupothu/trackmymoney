@@ -255,10 +255,28 @@ function Borrowings({ borrowings, setBorrowings }) {
                     </div>
 
                     <div className="flex gap-2 items-center">
-                      <span className="font-semibold">₹{b.amount}</span>
-                      <button onClick={() => markSettled(b.id)} className="text-green-600 text-xs border px-2 rounded">Settled</button>
-                      <button onClick={() => startEdit(b)} className="text-blue-600 text-xs border px-2 rounded">Edit</button>
-                      <button onClick={() => deleteBorrowing(b.id)} className="text-red-600 text-xs border px-2 rounded">Delete</button>
+                      <span className="font-semibold mr-2">₹{b.amount}</span>
+
+                      <button
+                        onClick={() => markSettled(b.id)}
+                        className="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-emerald-100 transition"
+                      >
+                        Settled
+                      </button>
+
+                      <button
+                        onClick={() => startEdit(b)}
+                        className="text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-indigo-100 transition"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteBorrowing(b.id)}
+                        className="text-rose-600 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-rose-100 transition"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}

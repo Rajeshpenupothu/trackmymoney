@@ -212,7 +212,7 @@ function Expenses({ expenses, setExpenses }) {
           </select>
 
           <button className="btn block w-full mt-3">
-            {editingId ? "Update Lending" : "Add Lending"}
+            {editingId ? "Update Expense" : "Add Expense"}
           </button>
 
 
@@ -276,9 +276,19 @@ function Expenses({ expenses, setExpenses }) {
                     </div>
 
                     <div className="flex gap-2 items-center">
-                      <span className="font-semibold">₹{e.amount}</span>
-                      <button onClick={() => startEdit(e)} className="text-blue-600 text-xs border px-2 rounded">Edit</button>
-                      <button onClick={() => deleteExpense(e.id)} className="text-red-600 text-xs border px-2 rounded">Delete</button>
+                      <span className="font-semibold mr-2">₹{e.amount}</span>
+                      <button
+                        onClick={() => startEdit(e)}
+                        className="text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-indigo-100 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteExpense(e.id)}
+                        className="text-rose-600 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-[10px] px-2 py-0.5 rounded-full hover:bg-rose-100 transition"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}
