@@ -16,6 +16,8 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+const COLORS = ["#6366f1", "#f43f5e", "#f59e0b", "#10b981", "#8b5cf6", "#ec4899", "#06b6d4"];
+
 function Reports({ incomes, expenses, borrowings, lendings, loading }) {
   const today = new Date();
 
@@ -386,10 +388,10 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
                 outerRadius={110}
                 label
               >
-                <Cell />
-                <Cell />
-                <Cell />
-                <Cell />
+                <Cell fill={COLORS[0]} />
+                <Cell fill={COLORS[1]} />
+                <Cell fill={COLORS[2]} />
+                <Cell fill={COLORS[3]} />
               </Pie>
               <Legend />
               <Tooltip />
@@ -413,7 +415,7 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
                 label
               >
                 {categoryData.map((_, index) => (
-                  <Cell key={index} />
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Legend />

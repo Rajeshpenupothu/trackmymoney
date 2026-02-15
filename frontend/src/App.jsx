@@ -190,7 +190,7 @@ function App() {
           {activePage === "Expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
           {activePage === "Borrowings" && <Borrowings borrowings={borrowings} setBorrowings={setBorrowings} />}
           {activePage === "Lendings" && <Lendings lendings={lendings} setLendings={setLendings} />}
-          {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={reportsLoading} />}
+          {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={initialLoading} />}
           {activePage === "Settings" && <Settings dark={dark} setDark={setDark} />}
           {activePage === "Profile" && <Profile />}
           {activePage === "Help" && <Help />}
