@@ -32,27 +32,6 @@ function Expenses({ expenses, setExpenses }) {
     { name: "Other", icon: "📝" },
   ];
 
-  // Load expenses
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (expenses.length === 0) {
-          const res = await api.get("/expenses");
-          setExpenses(res.data.map(e => ({
-            ...e,
-            year: new Date(e.expenseDate + "T00:00:00").getFullYear(),
-            month: new Date(e.expenseDate + "T00:00:00").toLocaleString("default", { month: "long" }),
-            day: new Date(e.expenseDate + "T00:00:00").getDate(),
-            title: e.description,
-          })));
-        }
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
   /* ===== SAVE / UPDATE ===== */
   const saveExpense = async (e) => {
     e.preventDefault();

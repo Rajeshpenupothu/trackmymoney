@@ -27,33 +27,19 @@ function Lendings({ lendings, setLendings }) {
     today.toLocaleString("default", { month: "long" })
   );
 
-  // Load lendings ONLY when this page is actually viewed (not on initial app mount)
-  useEffect(() => {
-    // Only load if array is empty and we haven't loaded yet
-    if (lendings.length === 0) {
-      const loadLendings = async () => {
-        try {
-          const res = await api.get("/lendings");
-          setLendings(res.data.map(l => {
-            const ld = new Date(l.lendDate + "T00:00:00");
-            const dd = new Date(l.dueDate + "T00:00:00");
-            return {
-              ...l,
-              year: ld.getFullYear(),
-              month: ld.toLocaleString("default", { month: "long" }),
-              day: ld.getDate(),
-              dueDay: dd.getDate(),
-              lendDateObj: ld,
-              dueDateObj: dd,
-            };
-          }));
-        } catch (error) {
-          console.error("Failed to load lendings:", error);
-        }
-      };
-      loadLendings();
-    }
-  }, []);
+  const formatLending = (l) => {
+    const ld = new Date(l.lendDate + "T00:00:00");
+    const dd = new Date(l.dueDate + "T00:00:00");
+    return {
+      ...l,
+      year: ld.getFullYear(),
+      month: ld.toLocaleString("default", { month: "long" }),
+      day: ld.getDate(),
+      dueDay: dd.getDate(),
+      lendDateObj: ld,
+      dueDateObj: dd,
+    };
+  };
 
   /* ===== SAVE / UPDATE ===== */
   const saveLending = async (e) => {

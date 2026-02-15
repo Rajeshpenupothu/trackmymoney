@@ -42,85 +42,87 @@ function App() {
   );
 
   // Data will be loaded on-demand by individual pages
+  // Centralized Data Store
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [borrowings, setBorrowings] = useState([]);
   const [lendings, setLendings] = useState([]);
-  const [reportsLoading, setReportsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Load heavy lists only when Reports is active (or when they are empty and Reports requested)
-  useEffect(() => {
-    const loadReportData = async () => {
-      try {
-        setReportsLoading(true);
-        const [expRes, incRes, borRes, lenRes] = await Promise.all([
-          api.get("/expenses"),
-          api.get("/incomes"),
-          api.get("/borrowings"),
-          api.get("/lendings"),
-        ]);
+  // Centralized Pre-fetching logic
+  const fetchAllData = async () => {
+    if (!user) return;
+    try {
+      setInitialLoading(true);
+      const [expRes, incRes, borRes, lenRes] = await Promise.all([
+        api.get("/expenses"),
+        api.get("/incomes"),
+        api.get("/borrowings"),
+        api.get("/lendings"),
+      ]);
 
-        const mapIncome = (i) => ({
-          ...i,
-          year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
-          month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
-        });
+      const mapIncome = (i) => ({
+        ...i,
+        year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
+        month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+      });
 
-        const mapExpense = (e) => ({
-          ...e,
-          year: new Date(e.expenseDate + "T00:00:00").getFullYear(),
-          month: new Date(e.expenseDate + "T00:00:00").toLocaleString("default", { month: "long" }),
-          day: new Date(e.expenseDate + "T00:00:00").getDate(),
-          title: e.description,
-        });
+      const mapExpense = (e) => ({
+        ...e,
+        year: new Date(e.expenseDate + "T00:00:00").getFullYear(),
+        month: new Date(e.expenseDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+        day: new Date(e.expenseDate + "T00:00:00").getDate(),
+        title: e.description,
+      });
 
-        const mapBorrowing = (b) => {
-          const bd = new Date(b.borrowDate + "T00:00:00");
-          const dd = new Date(b.dueDate + "T00:00:00");
-          return {
-            ...b,
-            year: bd.getFullYear(),
-            month: bd.toLocaleString("default", { month: "long" }),
-            day: bd.getDate(),
-            dueDay: dd.getDate(),
-            dueDateObj: dd,
-          };
+      const mapBorrowing = (b) => {
+        const bd = new Date(b.borrowDate + "T00:00:00");
+        const dd = new Date(b.dueDate + "T00:00:00");
+        return {
+          ...b,
+          year: bd.getFullYear(),
+          month: bd.toLocaleString("default", { month: "long" }),
+          day: bd.getDate(),
+          dueDay: dd.getDate(),
+          dueDateObj: dd,
         };
+      };
 
-        const mapLending = (l) => {
-          const ld = new Date(l.lendDate + "T00:00:00");
-          const dd = new Date(l.dueDate + "T00:00:00");
-          return {
-            ...l,
-            year: ld.getFullYear(),
-            month: ld.toLocaleString("default", { month: "long" }),
-            day: ld.getDate(),
-            dueDay: dd.getDate(),
-            lendDateObj: ld,
-            dueDateObj: dd,
-          };
+      const mapLending = (l) => {
+        const ld = new Date(l.lendDate + "T00:00:00");
+        const dd = new Date(l.dueDate + "T00:00:00");
+        return {
+          ...l,
+          year: ld.getFullYear(),
+          month: ld.toLocaleString("default", { month: "long" }),
+          day: ld.getDate(),
+          dueDay: dd.getDate(),
+          lendDateObj: ld,
+          dueDateObj: dd,
         };
+      };
 
-        setExpenses((expRes.data || []).map(mapExpense));
-        setIncomes((incRes.data || []).map(mapIncome));
-        setBorrowings((borRes.data || []).map(mapBorrowing));
-        setLendings((lenRes.data || []).map(mapLending));
-      } catch (err) {
-        console.error("Failed to load reports data:", err);
-      } finally {
-        setReportsLoading(false);
-      }
-    };
-
-    if (activePage === "Reports") {
-      // only fetch if arrays are empty to avoid repeated loads
-      if (expenses.length === 0 && incomes.length === 0 && borrowings.length === 0 && lendings.length === 0) {
-        loadReportData();
-      }
+      setExpenses((expRes.data || []).map(mapExpense));
+      setIncomes((incRes.data || []).map(mapIncome));
+      setBorrowings((borRes.data || []).map(mapBorrowing));
+      setLendings((lenRes.data || []).map(mapLending));
+    } catch (err) {
+      console.error("Failed to pre-fetch app data:", err);
+    } finally {
+      setInitialLoading(false);
     }
-  }, [activePage]);
+  };
 
-  if (isLoading) {
+  useEffect(() => {
+    if (user) {
+      fetchAllData();
+    } else {
+      setInitialLoading(false);
+    }
+  }, [user]);
+
+  if (isLoading || (user && initialLoading)) {
     return (
       <div className="flex items-center justify-center h-screen bg-zinc-100 dark:bg-slate-900">
         <div className="text-center">

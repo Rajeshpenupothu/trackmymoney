@@ -23,6 +23,12 @@ function Income({ incomes, setIncomes }) {
     new Date().toLocaleString("default", { month: "long" })
   );
 
+  const formatIncome = (i) => ({
+    ...i,
+    year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
+    month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+  });
+
   const [category, setCategory] = useState("");
   /* ===== HARDCODED CATEGORIES ===== */
   const categories = [
@@ -32,25 +38,6 @@ function Income({ incomes, setIncomes }) {
     { name: "Gift", icon: "🎁" },
     { name: "Other", icon: "➕" },
   ];
-
-  /* ===== LOAD INCOMES ===== */
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (incomes.length === 0) {
-          const res = await api.get("/incomes");
-          setIncomes(res.data.map(i => ({
-            ...i,
-            year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
-            month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
-          })));
-        }
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      }
-    };
-    fetchData();
-  }, []);
 
   /* ===== SAVE / UPDATE ===== */
   const saveIncome = async (e) => {
@@ -75,17 +62,10 @@ function Income({ incomes, setIncomes }) {
         });
 
         const updated = res.data;
-
         setIncomes(
           incomes.map((i) =>
             i.id === editingId
-              ? {
-                ...updated,
-                year: new Date(updated.incomeDate).getFullYear(),
-                month: new Date(updated.incomeDate).toLocaleString("default", {
-                  month: "long",
-                }),
-              }
+              ? formatIncome(updated)
               : i
           )
         );
@@ -99,18 +79,7 @@ function Income({ incomes, setIncomes }) {
           incomeDate,
         });
 
-        const saved = res.data;
-
-        setIncomes([
-          ...incomes,
-          {
-            ...saved,
-            year: new Date(saved.incomeDate).getFullYear(),
-            month: new Date(saved.incomeDate).toLocaleString("default", {
-              month: "long",
-            }),
-          },
-        ]);
+        setIncomes([...incomes, formatIncome(res.data)]);
       }
 
       setSource("");

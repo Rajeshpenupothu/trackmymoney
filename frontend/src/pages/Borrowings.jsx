@@ -28,33 +28,18 @@ function Borrowings({ borrowings, setBorrowings }) {
     today.toLocaleString("default", { month: "long" })
   );
 
-  // Load borrowings ONLY when this page is actually viewed (not on initial app mount)
-  useEffect(() => {
-    // Only load if array is empty and we haven't loaded yet
-    if (borrowings.length === 0) {
-      const loadBorrowings = async () => {
-        try {
-          const res = await api.get("/borrowings");
-          setBorrowings(res.data.map(b => {
-            // Use T00:00:00 to avoid timezone shift on new Date()
-            const bd = new Date(b.borrowDate + "T00:00:00");
-            const dd = new Date(b.dueDate + "T00:00:00");
-            return {
-              ...b,
-              year: bd.getFullYear(),
-              month: bd.toLocaleString("default", { month: "long" }),
-              day: bd.getDate(),
-              dueDay: dd.getDate(),
-              dueDateObj: dd,
-            };
-          }));
-        } catch (error) {
-          console.error("Failed to load borrowings:", error);
-        }
-      };
-      loadBorrowings();
-    }
-  }, []);
+  const formatBorrowing = (b) => {
+    const bd = new Date(b.borrowDate + "T00:00:00");
+    const dd = new Date(b.dueDate + "T00:00:00");
+    return {
+      ...b,
+      year: bd.getFullYear(),
+      month: bd.toLocaleString("default", { month: "long" }),
+      day: bd.getDate(),
+      dueDay: dd.getDate(),
+      dueDateObj: dd,
+    };
+  };
 
   /* ===== SAVE / UPDATE ===== */
   const saveBorrowing = async (e) => {
@@ -111,22 +96,13 @@ function Borrowings({ borrowings, setBorrowings }) {
         const res = await api.post("/borrowings", {
           name,
           amount: amount.toString(),
-          borrowDate: formatDate(borrowDateObj), // Use helper
-          dueDate: formatDate(dueDateObj),       // Use helper
+          borrowDate: formatDate(borrowDateObj),
+          dueDate: formatDate(dueDateObj),
         });
-
+        const saved = res.data;
         setBorrowings([
           ...borrowings,
-          {
-            id: res.data.id,
-            name,
-            amount: Number(amount),
-            year,
-            month,
-            day: Number(day),
-            dueDay: Number(dueDay),
-            settled: false,
-          },
+          formatBorrowing(saved),
         ]);
       }
 
