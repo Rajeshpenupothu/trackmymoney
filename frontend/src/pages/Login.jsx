@@ -261,24 +261,6 @@ function Login() {
             {isLoading ? "Processing..." : (isRegisterMode ? "Register" : "Login")}
           </button>
 
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-zinc-200"></div>
-            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">or</span>
-            <div className="flex-1 h-px bg-zinc-200"></div>
-          </div>
-
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              theme="outline"
-              shape="pill"
-              size="large"
-              text="continue_with"
-              width="320"
-            />
-          </div>
-
           <p className="text-sm text-center text-gray-600 pt-4">
             {isRegisterMode
               ? "Already have an account?"
