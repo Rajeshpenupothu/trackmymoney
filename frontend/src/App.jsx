@@ -96,7 +96,7 @@ function App() {
         setDark={setDark}
       />
 
-      <div className="flex-1 overflow-y-hidden bg-zinc-100 dark:bg-[#272727] p-6">
+      <div className="flex-1 overflow-y-auto bg-zinc-100 dark:bg-[#272727] p-6">
         {activePage === "Home" && (
           <Home
             selectedYear={selectedYear}
