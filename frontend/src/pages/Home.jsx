@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import api from "../api/api";
 
 const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 function Home({
@@ -76,7 +76,7 @@ function Home({
       </div>
 
       {/* Cards using summary data */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-7 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-7 mb-6">
         <Card title="Total Income" value={summary.totalIncome} fetching={fetching} />
         <Card title="Total Expenses" value={summary.totalExpense} fetching={fetching} />
         <Card title="Total Borrowed" value={summary.totalBorrowed} fetching={fetching} />

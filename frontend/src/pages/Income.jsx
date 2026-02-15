@@ -155,10 +155,10 @@ function Income({ incomes, setIncomes }) {
     <div>
       <h1 className="text-2xl font-semibold mb-4">Income</h1>
 
-      <div className="flex gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
         {/* LEFT — FORM */}
-        <form onSubmit={saveIncome} className="card p-6 w-1/2 h-fit">
+        <form onSubmit={saveIncome} className="card p-4 lg:p-6 w-full lg:w-1/2 h-fit">
           {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
           <label className="text-sm font-semibold mb-1 block">Source</label>
@@ -208,7 +208,7 @@ function Income({ incomes, setIncomes }) {
 
 
         {/* RIGHT — LIST */}
-        <div className="card p-6 w-1/2 max-h-[600px] overflow-y-auto">
+        <div className="card p-4 lg:p-6 w-full lg:w-1/2 max-h-[600px] overflow-y-auto">
           <div className="border-b border-[#CFD5D7] dark:border-[#6b6b6b] pb-4 mb-4">
             <h2 className="font-semibold mb-3">Income List</h2>
 

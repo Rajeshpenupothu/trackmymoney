@@ -164,10 +164,10 @@ function Lendings({ lendings, setLendings }) {
     <div className="text-zinc-800 dark:text-zinc-100">
       <h1 className="text-2xl font-semibold mb-4">Lendings</h1>
 
-      <div className="flex gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
         {/* LEFT — FORM */}
-        <form onSubmit={saveLending} className="card p-6 w-1/2 h-fit">
+        <form onSubmit={saveLending} className="card p-4 lg:p-6 w-full lg:w-1/2 h-fit">
           {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
 
           <input
@@ -216,7 +216,7 @@ function Lendings({ lendings, setLendings }) {
 
 
         {/* RIGHT — LIST */}
-        <div className="card p-6 w-1/2 max-h-[600px] overflow-y-auto">
+        <div className="card p-4 lg:p-6 w-full lg:w-1/2 max-h-[600px] overflow-y-auto">
           <div className="border-b pb-4 mb-4 space-y-3">
             <h2 className="font-semibold">Lending List</h2>
 

@@ -11,12 +11,13 @@ import {
   Settings,
   HelpCircle,
   Tag,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRef, useEffect } from "react";
 
-function Sidebar({ active, setActive, dark, setDark }) {
+function Sidebar({ active, setActive, dark, setDark, onClose }) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -53,8 +54,16 @@ function Sidebar({ active, setActive, dark, setDark }) {
       }}
     >
       {/* ===== BRAND HEADER ===== */}
-      <div className={`p-4 border-b ${dark ? "border-[#2A2A2D]" : "border-[#CFD5D7]"}`}>
+      <div className={`p-4 border-b flex items-center justify-between ${dark ? "border-[#2A2A2D]" : "border-[#CFD5D7]"}`}>
         <h1 className="text-lg font-bold">TrackMyMoney</h1>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       {/* ===== MENU ===== */}

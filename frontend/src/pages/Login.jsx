@@ -99,14 +99,14 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 relative">
-      {/* Demo Button at top-right */}
-      <div className="absolute top-6 right-6">
+      {/* Demo Button - Responsive positioning */}
+      <div className="fixed top-4 right-4 sm:absolute sm:top-6 sm:right-6 z-10">
         <button
           onClick={handleDemoLogin}
           disabled={isLoading}
-          className="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-lg 
+          className="bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded-full font-bold shadow-lg 
                      hover:bg-indigo-700 transition-all transform hover:scale-105
-                     disabled:bg-indigo-400 disabled:cursor-not-allowed"
+                     disabled:bg-indigo-400 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {isLoading ? (isWakingUp ? "Waking up server..." : "Wait...") : "Demo"}
         </button>

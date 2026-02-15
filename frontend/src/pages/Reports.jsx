@@ -219,11 +219,12 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
       <h1 className="text-2xl font-bold mb-6">Reports</h1>
       {/* FILTERS */}
       {/* FILTERS — Same as Home */}
-      <div className="flex gap-4 mb-6">
+      {/* FILTERS — Same as Home */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="input w-48"
+          className="input w-full sm:w-48"
         >
           {[2024, 2025, 2026].map((y) => (
             <option key={y}>{y}</option>
@@ -233,7 +234,7 @@ function Reports({ incomes, expenses, borrowings, lendings, loading }) {
         <select
           value={month}
           onChange={(e) => setMonth(e.target.value)}
-          className="input w-48"
+          className="input w-full sm:w-48"
         >
           {MONTHS.map((m) => (
             <option key={m}>{m}</option>

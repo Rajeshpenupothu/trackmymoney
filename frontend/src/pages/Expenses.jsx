@@ -175,11 +175,11 @@ function Expenses({ expenses, setExpenses }) {
     <div>
       <h1 className="text-2xl font-semibold mb-4">Expenses</h1>
 
-      <div className="flex gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
 
         {/* FORM */}
-        <form onSubmit={saveExpense} className="card p-6 w-1/2 h-fit">
+        <form onSubmit={saveExpense} className="card p-4 lg:p-6 w-full lg:w-1/2 h-fit">
           {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
           <label className="text-sm font-semibold mb-1 block">Title</label>
@@ -241,7 +241,7 @@ function Expenses({ expenses, setExpenses }) {
 
 
         {/* LIST */}
-        <div className="card p-6 w-1/2 max-h-[420px] overflow-y-auto">
+        <div className="card p-4 lg:p-6 w-full lg:w-1/2 max-h-[600px] overflow-y-auto">
           <div className="p-4 border-b space-y-3">
             <h2 className="font-semibold">Expense List</h2>
 

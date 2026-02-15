@@ -16,6 +16,7 @@ import api from "./api/api";
 function App() {
   const { user, isLoading } = useAuth();
   const [activePage, setActivePage] = useState("Home");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [dark, setDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -133,32 +134,63 @@ function App() {
   if (!user) return <Login />;
 
   return (
-    <div className="flex h-screen bg-zinc-100 dark:bg-slate-900 text-zinc-900 dark:text-zinc-100">
-      <Sidebar
-        active={activePage}
-        setActive={setActivePage}
-        dark={dark}
-        setDark={setDark}
-      />
+    <div className="flex h-screen bg-zinc-100 dark:bg-slate-900 text-zinc-900 dark:text-zinc-100 overflow-hidden">
+      {/* Sidebar - Responsive Drawer on Mobile */}
+      <div className={`
+        fixed inset-0 z-50 lg:relative lg:flex lg:translate-x-0 transition-transform duration-300
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        {/* Overlay for mobile */}
+        <div
+          className="absolute inset-0 bg-black/50 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
 
-      <div className="flex-1 overflow-y-auto bg-zinc-100 dark:bg-[#272727] p-6">
-        {activePage === "Home" && (
-          <Home
-            selectedYear={selectedYear}
-            selectedMonth={selectedMonth}
-            setSelectedYear={setSelectedYear}
-            setSelectedMonth={setSelectedMonth}
-          />
-        )}
+        <Sidebar
+          active={activePage}
+          setActive={(page) => {
+            setActivePage(page);
+            setIsSidebarOpen(false); // Close drawer on selection
+          }}
+          dark={dark}
+          setDark={setDark}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      </div>
 
-        {activePage === "Income" && <Income incomes={incomes} setIncomes={setIncomes} />}
-        {activePage === "Expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
-        {activePage === "Borrowings" && <Borrowings borrowings={borrowings} setBorrowings={setBorrowings} />}
-        {activePage === "Lendings" && <Lendings lendings={lendings} setLendings={setLendings} />}
-        {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={reportsLoading} />}
-        {activePage === "Settings" && <Settings dark={dark} setDark={setDark} />}
-        {activePage === "Profile" && <Profile />}
-        {activePage === "Help" && <Help />}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Mobile Top Bar */}
+        <header className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1A1A] border-b dark:border-[#2A2A2D]">
+          <h1 className="text-lg font-bold">TrackMyMoney</h1>
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+        </header>
+
+        <main className="flex-1 overflow-y-auto bg-zinc-100 dark:bg-[#272727] p-4 lg:p-6">
+          {activePage === "Home" && (
+            <Home
+              selectedYear={selectedYear}
+              selectedMonth={selectedMonth}
+              setSelectedYear={setSelectedYear}
+              setSelectedMonth={setSelectedMonth}
+            />
+          )}
+
+          {activePage === "Income" && <Income incomes={incomes} setIncomes={setIncomes} />}
+          {activePage === "Expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
+          {activePage === "Borrowings" && <Borrowings borrowings={borrowings} setBorrowings={setBorrowings} />}
+          {activePage === "Lendings" && <Lendings lendings={lendings} setLendings={setLendings} />}
+          {activePage === "Reports" && <Reports incomes={incomes} expenses={expenses} borrowings={borrowings} lendings={lendings} loading={reportsLoading} />}
+          {activePage === "Settings" && <Settings dark={dark} setDark={setDark} />}
+          {activePage === "Profile" && <Profile />}
+          {activePage === "Help" && <Help />}
+        </main>
       </div>
     </div>
   );
