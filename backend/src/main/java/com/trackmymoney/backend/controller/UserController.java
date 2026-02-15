@@ -42,9 +42,15 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-        public ResponseEntity<UserResponse> getUserByEmail(
+    public ResponseEntity<UserResponse> getUserByEmail(
             @PathVariable @NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email) {
 
         return ResponseEntity.ok(userService.getUserByEmail(email));
+    }
+
+    @DeleteMapping("/reset")
+    public ResponseEntity<Void> resetAccount(java.security.Principal principal) {
+        userService.resetAccount(principal.getName());
+        return ResponseEntity.noContent().build();
     }
 }

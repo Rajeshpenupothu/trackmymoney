@@ -5,7 +5,7 @@ import com.trackmymoney.backend.dto.UserResponse;
 import com.trackmymoney.backend.entity.User;
 import com.trackmymoney.backend.exception.DuplicateEmailException;
 import com.trackmymoney.backend.exception.UserNotFoundException;
-import com.trackmymoney.backend.repository.UserRepository;
+import com.trackmymoney.backend.repository.*;
 import com.trackmymoney.backend.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,26 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final IncomeRepository incomeRepository;
+    private final ExpenseRepository expenseRepository;
+    private final BorrowingRepository borrowingRepository;
+    private final LendingRepository lendingRepository;
+    private final TransactionRepository transactionRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           IncomeRepository incomeRepository,
+                           ExpenseRepository expenseRepository,
+                           BorrowingRepository borrowingRepository,
+                           LendingRepository lendingRepository,
+                           TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.incomeRepository = incomeRepository;
+        this.expenseRepository = expenseRepository;
+        this.borrowingRepository = borrowingRepository;
+        this.lendingRepository = lendingRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -79,5 +94,19 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() ->
                         new UserNotFoundException("User not found with email: " + email));
         return user.getId();
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public void resetAccount(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found with email: " + email));
+
+        incomeRepository.deleteByUser(user);
+        expenseRepository.deleteByUser(user);
+        borrowingRepository.deleteByUser(user);
+        lendingRepository.deleteByUser(user);
+        transactionRepository.deleteByUserId(user.getId());
     }
 }

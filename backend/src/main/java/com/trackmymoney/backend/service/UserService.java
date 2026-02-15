@@ -12,4 +12,6 @@ public interface UserService {
     UserResponse getUserByEmail(String email);
     
     Long findIdByEmail(String email);
+
+    void resetAccount(String email);
 }

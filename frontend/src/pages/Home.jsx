@@ -83,18 +83,20 @@ function Home({
         <Card title="Total Lent" value={summary.totalLent} fetching={fetching} />
       </div>
 
-      {/* Overdue borrowed / lent */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-6">
-        <div className="card p-6">
-          <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Borrowed</h2>
-          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueBorrowed || 0}</p>
-        </div>
+      {/* Overdue borrowed / lent - conditionally rendered */}
+      {JSON.parse(localStorage.getItem("alertsEnabled") ?? "true") && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-6">
+          <div className="card p-6">
+            <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Borrowed</h2>
+            <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueBorrowed || 0}</p>
+          </div>
 
-        <div className="card p-6">
-          <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Lent</h2>
-          <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueLent || 0}</p>
+          <div className="card p-6">
+            <h2 className="text-sm text-gray-600 dark:text-gray-200">Overdue Lent</h2>
+            <p className="text-2xl font-semibold mt-3 text-black dark:text-white">₹{summary.overdueLent || 0}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="card p-6 mb-8">
         <h2 className="text-sm text-gray-600 dark:text-gray-200">Available Balance</h2>

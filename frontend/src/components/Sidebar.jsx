@@ -12,6 +12,8 @@ import {
   HelpCircle,
   Tag,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -55,15 +57,29 @@ function Sidebar({ active, setActive, dark, setDark, onClose }) {
     >
       {/* ===== BRAND HEADER ===== */}
       <div className={`p-4 border-b flex items-center justify-between ${dark ? "border-[#2A2A2D]" : "border-[#CFD5D7]"}`}>
-        <h1 className="text-lg font-bold">TrackMyMoney</h1>
-        {onClose && (
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold">TrackMyMoney</h1>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
           <button
-            onClick={onClose}
-            className="lg:hidden p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            onClick={() => setDark(!dark)}
+            className={`p-2 rounded-lg transition-colors ${dark ? "hover:bg-[#2A2A2D] text-yellow-400" : "hover:bg-zinc-100 text-indigo-600"}`}
+            title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            <X size={20} />
+            {dark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-        )}
+
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <X size={20} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ===== MENU ===== */}

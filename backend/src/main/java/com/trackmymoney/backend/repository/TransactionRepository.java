@@ -11,4 +11,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByUserIdAndSettledFalse(Long userId);
 
     List<Transaction> findByUserIdAndType(Long userId, TransactionType type);
+
+    void deleteByUserId(Long userId);
 }
