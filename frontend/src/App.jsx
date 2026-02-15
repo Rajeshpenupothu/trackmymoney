@@ -59,10 +59,51 @@ function App() {
           api.get("/lendings"),
         ]);
 
-        setExpenses(expRes.data || []);
-        setIncomes(incRes.data || []);
-        setBorrowings(borRes.data || []);
-        setLendings(lenRes.data || []);
+        const mapIncome = (i) => ({
+          ...i,
+          year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
+          month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+        });
+
+        const mapExpense = (e) => ({
+          ...e,
+          year: new Date(e.expenseDate + "T00:00:00").getFullYear(),
+          month: new Date(e.expenseDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+          day: new Date(e.expenseDate + "T00:00:00").getDate(),
+          title: e.description,
+        });
+
+        const mapBorrowing = (b) => {
+          const bd = new Date(b.borrowDate + "T00:00:00");
+          const dd = new Date(b.dueDate + "T00:00:00");
+          return {
+            ...b,
+            year: bd.getFullYear(),
+            month: bd.toLocaleString("default", { month: "long" }),
+            day: bd.getDate(),
+            dueDay: dd.getDate(),
+            dueDateObj: dd,
+          };
+        };
+
+        const mapLending = (l) => {
+          const ld = new Date(l.lendDate + "T00:00:00");
+          const dd = new Date(l.dueDate + "T00:00:00");
+          return {
+            ...l,
+            year: ld.getFullYear(),
+            month: ld.toLocaleString("default", { month: "long" }),
+            day: ld.getDate(),
+            dueDay: dd.getDate(),
+            lendDateObj: ld,
+            dueDateObj: dd,
+          };
+        };
+
+        setExpenses((expRes.data || []).map(mapExpense));
+        setIncomes((incRes.data || []).map(mapIncome));
+        setBorrowings((borRes.data || []).map(mapBorrowing));
+        setLendings((lenRes.data || []).map(mapLending));
       } catch (err) {
         console.error("Failed to load reports data:", err);
       } finally {

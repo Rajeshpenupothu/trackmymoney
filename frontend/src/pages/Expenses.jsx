@@ -40,9 +40,9 @@ function Expenses({ expenses, setExpenses }) {
           const res = await api.get("/expenses");
           setExpenses(res.data.map(e => ({
             ...e,
-            year: new Date(e.expenseDate).getFullYear(),
-            month: new Date(e.expenseDate).toLocaleString("default", { month: "long" }),
-            day: new Date(e.expenseDate).getDate(),
+            year: new Date(e.expenseDate + "T00:00:00").getFullYear(),
+            month: new Date(e.expenseDate + "T00:00:00").toLocaleString("default", { month: "long" }),
+            day: new Date(e.expenseDate + "T00:00:00").getDate(),
             title: e.description,
           })));
         }

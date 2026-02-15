@@ -41,8 +41,8 @@ function Income({ incomes, setIncomes }) {
           const res = await api.get("/incomes");
           setIncomes(res.data.map(i => ({
             ...i,
-            year: new Date(i.incomeDate).getFullYear(),
-            month: new Date(i.incomeDate).toLocaleString("default", { month: "long" }),
+            year: new Date(i.incomeDate + "T00:00:00").getFullYear(),
+            month: new Date(i.incomeDate + "T00:00:00").toLocaleString("default", { month: "long" }),
           })));
         }
       } catch (error) {
