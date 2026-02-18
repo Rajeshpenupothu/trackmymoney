@@ -48,6 +48,16 @@ function Income({ incomes, setIncomes }) {
       return;
     }
 
+    if (Number(amount) <= 0) {
+      setError("Amount must be positive");
+      return;
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(source)) {
+      setError("Source should only contain alphabet letters and spaces");
+      return;
+    }
+
     try {
       const incomeDate = `${year}-${String(
         new Date(`${month} 1`).getMonth() + 1
@@ -154,6 +164,7 @@ function Income({ incomes, setIncomes }) {
           <label className="text-sm font-semibold mb-1 block">Amount (₹)</label>
           <input
             type="number"
+            min="1"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="input mb-3"

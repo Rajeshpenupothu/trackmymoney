@@ -41,6 +41,22 @@ function Expenses({ expenses, setExpenses }) {
       return;
     }
 
+    if (Number(amount) <= 0) {
+      setError("Amount must be positive");
+      return;
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(title)) {
+      setError("Title should only contain alphabet letters and spaces");
+      return;
+    }
+
+    const dayNum = Number(day);
+    if (isNaN(dayNum) || dayNum < 1 || dayNum > 31) {
+      setError("Please enter a valid day (1-31)");
+      return;
+    }
+
     try {
       const expenseDate = `${year}-${String(
         new Date(`${month} 1`).getMonth() + 1
@@ -171,6 +187,7 @@ function Expenses({ expenses, setExpenses }) {
           <label className="text-sm font-semibold mb-1 block">Amount (₹)</label>
           <input
             type="number"
+            min="1"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="input mb-3"
@@ -191,6 +208,8 @@ function Expenses({ expenses, setExpenses }) {
 
             <input
               type="number"
+              min="1"
+              max="31"
               placeholder="Day"
               value={day}
               onChange={(e) => setDay(e.target.value)}

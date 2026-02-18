@@ -51,6 +51,28 @@ function Lendings({ lendings, setLendings }) {
       return;
     }
 
+    if (Number(amount) <= 0) {
+      setError("Amount must be positive");
+      return;
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      setError("Name should only contain alphabet letters and spaces");
+      return;
+    }
+
+    const dayNum = Number(day);
+    const dueDayNum = Number(dueDay);
+
+    if (isNaN(dayNum) || dayNum < 1 || dayNum > 31) {
+      setError("Please enter a valid lending day (1-31)");
+      return;
+    }
+    if (isNaN(dueDayNum) || dueDayNum < 1 || dueDayNum > 31) {
+      setError("Please enter a valid due day (1-31)");
+      return;
+    }
+
     const monthIndex = MONTHS.indexOf(month);
     const lendDate = new Date(year, monthIndex, Number(day));
     const dueDate = new Date(year, monthIndex, Number(dueDay));
@@ -165,6 +187,7 @@ function Lendings({ lendings, setLendings }) {
 
           <input
             type="number"
+            min="1"
             placeholder="Amount (₹)"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -181,13 +204,18 @@ function Lendings({ lendings, setLendings }) {
             </select>
 
             <input
+              type="number"
+              min="1"
+              max="31"
               placeholder="Day"
               value={day}
               onChange={(e) => setDay(e.target.value)}
               className="input"
             />
-
             <input
+              type="number"
+              min="1"
+              max="31"
               placeholder="Due"
               value={dueDay}
               onChange={(e) => setDueDay(e.target.value)}

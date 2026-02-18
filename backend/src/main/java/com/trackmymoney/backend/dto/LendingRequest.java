@@ -1,10 +1,18 @@
 package com.trackmymoney.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 
 public record LendingRequest(
+        @NotBlank(message = "Name is required")
         String name,
+
+        @NotNull(message = "Amount is required")
+        @Positive(message = "Amount must be positive")
         Double amount,
+        
         LocalDate lendDate,
         LocalDate dueDate
 ) {}
